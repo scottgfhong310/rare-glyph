@@ -42,8 +42,13 @@ rare-glyph/
    │  ├─ glyphs.js                 # 登録：window.RG_GLYPHS = [{file, ids, cbeta, code, uni, timestamp}]
    │  ├─ i18n.js · locales/{zh-Hant,en,ja}.js
    │  ├─ side-tool.css · thinking-dot.css · materialize-dark.css
+   │  └─ fonts/                    # IDC フォールバック subset（U+2FF0–2FFF + U+31EF）⿼⿽⿾⿿ 用；bundled BabelStone Han（APL）
    └─ lib/Typeface/svgs/           # 共有欠字コーパス（repo はサンプルのみ同梱）
 ```
+
+> 最新の 4 つの IDC（`⿼⿽⿾⿿`、Unicode 15.1）は多くのシステムフォントに無いため、`unicode-range`
+> で限定した極小（~5KB）の **BabelStone Han** subset を同梱し、パレットと構造ツリーで必ず表示。
+> ライセンスは ARPHIC PUBLIC LICENSE（`public/apps/rare-glyph/fonts/ARPHIC_PUBLIC_LICENSE.txt` と `LICENSE` の同梱注記を参照）。
 
 > **canon からの意図的な逸脱：** 欠字コーパスとアップロード先は共有の `/lib/Typeface/svgs/`
 > （canon 既定の `/upload/<name>/` ではない）。生成する `.glyph` span が、`markdown-library` /

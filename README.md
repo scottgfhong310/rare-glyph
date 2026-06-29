@@ -42,8 +42,14 @@ rare-glyph/
    │  ├─ glyphs.js                 # registry: window.RG_GLYPHS = [{file, ids, cbeta, code, uni, timestamp}]
    │  ├─ i18n.js · locales/{zh-Hant,en,ja}.js
    │  ├─ side-tool.css · thinking-dot.css · materialize-dark.css
+   │  └─ fonts/                    # IDC fallback subset (U+2FF0–2FFF + U+31EF) for ⿼⿽⿾⿿; bundled BabelStone Han (APL)
    └─ lib/Typeface/svgs/           # shared glyph corpus (repo ships a few samples)
 ```
+
+> The four newest IDCs (`⿼⿽⿾⿿`, Unicode 15.1) are missing from most system fonts; a tiny
+> (~5 KB) `unicode-range`-scoped subset of **BabelStone Han** is bundled so the palette and
+> structure tree always render them. Licensed under the ARPHIC PUBLIC LICENSE (see
+> `public/apps/rare-glyph/fonts/ARPHIC_PUBLIC_LICENSE.txt` and the bundled note in `LICENSE`).
 
 > **Deliberate divergence from canon:** the glyph corpus and upload target are the shared
 > `/lib/Typeface/svgs/` path (not the canonical `/upload/<name>/`), because the generated

@@ -42,8 +42,13 @@ rare-glyph/
    │  ├─ glyphs.js                 # 登錄：window.RG_GLYPHS = [{file, ids, cbeta, code, uni, timestamp}]
    │  ├─ i18n.js · locales/{zh-Hant,en,ja}.js
    │  ├─ side-tool.css · thinking-dot.css · materialize-dark.css
+   │  └─ fonts/                    # IDC 後備 subset（U+2FF0–2FFF + U+31EF）供 ⿼⿽⿾⿿ 顯示；bundled BabelStone Han（APL）
    └─ lib/Typeface/svgs/           # 共用缺字語料（repo 只附少量 sample）
 ```
+
+> 最新四個 IDC（`⿼⿽⿾⿿`，Unicode 15.1）多數系統字型沒有；本 app bundle 一份極小（~5KB）、
+> 以 `unicode-range` 限定的 **BabelStone Han** subset，使調色盤與結構樹一定顯示得出。授權為
+> ARPHIC PUBLIC LICENSE（見 `public/apps/rare-glyph/fonts/ARPHIC_PUBLIC_LICENSE.txt` 與 `LICENSE` 的 bundled 聲明）。
 
 > **刻意偏離 canon：** 缺字語料與上傳目標是共用的 `/lib/Typeface/svgs/`（而非 canon 預設的
 > `/upload/<name>/`），因為產出的 `.glyph` span 必須指向 `markdown-library` /

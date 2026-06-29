@@ -46,6 +46,7 @@ npm install && node app.js          # → http://localhost:3000/apps/rare-glyph/
   `parseIds`（遞迴、surrogate-safe、回 needMore/trailing/empty 錯誤碼）、`describeTree` / `leafChars`、`buildSpan` / `buildCharSpan`、`downloadUrl` / `timestamp`、API 包裝。
   `rare-glyph.js` 是碰 DOM 的控制器（網格、find 過濾、調色盤、即時驗證/樹、選檔、上傳、刪除、存檔、SVG/PNG 下載、主題/語言）。PNG 光柵化（canvas，白底黑字）在控制器、不放純 lib。
 - **IDC 元數**：⿰⿱⿴–⿽ 二元、⿲⿳ 三元、⿾⿿ 一元。葉節點＝任何非 IDC 運算子的單一碼位。
+- **IDC 後備字型**：`⿼⿽⿾⿿`（U+2FFC–2FFF，Unicode 15.1）＋`U+31EF` 多數系統字型沒有→tofu。bundle `fonts/BabelStoneHan-IDC-subset.woff2`（~5KB、`unicode-range: U+2FF0-2FFF,U+31EF` 限定），以 `'IDCGlyph'` 置於調色盤/結構樹/IDS 輸入框/清單徽章字型堆疊最前。授權 ARPHIC PUBLIC LICENSE（衍生自文鼎 AR PL；`fonts/ARPHIC_PUBLIC_LICENSE.txt` ＋ `LICENSE` §9.1 bundled 聲明）。data-ids 存真正字元、與字型無關。
 - **timestamp 與排序**：每筆 `timestamp`（yyyyMMddHHmmss）記加入時間；`/list` 統一依此降冪（最近加入排最前，含無字形登錄）；svg 未存過則以檔案 birthtime 回退。
 - **find**：純前端跨欄位（file/stem/code/uni/ids/cbeta）不分大小寫子字串過濾，只過濾顯示。
 - **後端安全**（canon §8）：操作目標固定（svgs/ 目錄 / glyphs.js）；檔名 sanitize（basename===原值、非 . / ..、

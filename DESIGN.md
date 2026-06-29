@@ -69,7 +69,8 @@ rare-glyph/
 │  │  ├─ i18n.js + locales/{zh-Hant,en,ja}.js
 │  │  ├─ side-tool.css             # 右側浮動工具列（§5.5 正統 .side-tools flex）
 │  │  ├─ thinking-dot.css          # 家族共用載入點 utility
-│  │  └─ materialize-dark.css      # 家族共用 Materialize 深色
+│  │  ├─ materialize-dark.css      # 家族共用 Materialize 深色
+│  │  └─ fonts/                    # IDC 後備 subset woff2（U+2FF0–2FFF+U+31EF；BabelStone Han, APL）+ 授權文
 │  └─ lib/Typeface/svgs/           # 缺字 SVG 語料（家族共用 Typeface 路徑）；repo 只附少量 sample
 └─ package.json · .gitignore · LICENSE · README{,.zh-Hant,.ja}.md · CLAUDE.md · DESIGN.md
 ```
@@ -152,6 +153,7 @@ rare-glyph/
 - **IDC 表**：U+2FF0–2FFF 全 16 個運算子，含元數（arity）：⿰⿱⿴–⿽ 二元、⿲⿳ 三元、⿾⿿ 一元；每個對應 `idc.*` i18n key（三語名稱）。
 - **`parseIds(str)`**：碼位層級（surrogate-safe）遞迴解析 → 結構樹；錯誤碼 `empty` / `needMore`（運算元不足，回 op/need/got）/ `trailing`（多餘字元）。葉節點＝任何非 IDC 運算子的單一碼位。
 - **UI**：調色盤點擊插入運算子；即時驗證徽章（合法/錯誤/中性）；結構樹附各組件碼位。
+- **IDC 後備字型**：`⿼⿽⿾⿿`（U+2FFC–2FFF，Unicode 15.1 新增）與 `U+31EF` 多數系統字型尚無、會 tofu。bundle 一份 `unicode-range` 限定（僅這些碼位）的 **BabelStone Han** subset woff2（~5KB，`fonts/`），以 `'IDCGlyph'` 置於調色盤 / 結構樹 / IDS 輸入框 / 清單徽章的字型堆疊最前，確保一定顯示；其餘字元不受影響（unicode-range 隔離）。授權 ARPHIC PUBLIC LICENSE（衍生自文鼎 AR PL）——subset 為修改版、保留字型 name table 的版權/授權、另附 `fonts/ARPHIC_PUBLIC_LICENSE.txt`，並於 `LICENSE` 加 §9.1 bundled 聲明。**data-ids 仍存真正的 Unicode 字元，與字型無關**。
 
 ### 7.4 CBETA 組字式
 

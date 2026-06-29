@@ -3,6 +3,17 @@
  * 載入點在 thinking-dot.css、Materialize 元件深色在 materialize-dark.css。
  */
 
+/* IDC 後備字型：只切 U+2FF0–2FFF + U+31EF 的 BabelStone Han subset（~5KB）。
+ * unicode-range 限定 → 只供這些表意文字描述字元成形，其餘字一律沿用原字型。
+ * 2FFC–2FFF（Unicode 15.1 新增）多數系統字型尚無，靠此確保調色盤/結構樹/輸入框都顯示得出。
+ * 授權：ARPHIC PUBLIC LICENSE（見 fonts/ARPHIC_PUBLIC_LICENSE.txt；字型檔自帶版權/授權 name 記錄）。*/
+@font-face {
+  font-family: 'IDCGlyph';
+  src: url('fonts/BabelStoneHan-IDC-subset.woff2') format('woff2');
+  unicode-range: U+2FF0-2FFF, U+31EF;
+  font-display: swap;
+}
+
 /* ===== 主題變數（light / dark 由 <html data-theme> 切換） ===== */
 :root,
 [data-theme="dark"] {
@@ -215,7 +226,7 @@ main { padding: 8px 0 56px; }
   word-break: break-all;
   line-height: 1.25;
 }
-.glyph-cell .cell-ids { font-size: .9rem; line-height: 1; min-height: .9rem; }
+.glyph-cell .cell-ids { font-family: 'IDCGlyph', sans-serif; font-size: .9rem; line-height: 1; min-height: .9rem; }
 .glyph-cell .cell-ids.empty::before { content: "—"; color: var(--muted); opacity: .5; }
 
 /* 無字形登錄格：以對應 Unicode 字（正常字型）取代 mask 字形 */
@@ -271,7 +282,7 @@ main { padding: 8px 0 56px; }
 }
 .idc-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
 .idc-btn:active { transform: translateY(0); }
-.idc-btn .idc-op { font-size: 1.5rem; line-height: 1.1; }
+.idc-btn .idc-op { font-family: 'IDCGlyph', sans-serif; font-size: 1.5rem; line-height: 1.1; }
 .idc-btn .idc-arity { font-size: .62rem; color: var(--muted); }
 
 /* ===== 輸入欄 ===== */
@@ -282,7 +293,7 @@ main { padding: 8px 0 56px; }
 .input-field .helper-text { color: var(--muted); }       /* 說明提示置於 textarea 下方；兩主題皆可讀 */
 #ids-input.materialize-textarea,
 #span-output.materialize-textarea {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: 'IDCGlyph', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   line-height: 1.6;
 }
 #ids-input.materialize-textarea { font-size: 1.4rem; }
@@ -300,7 +311,7 @@ main { padding: 8px 0 56px; }
 .ids-validate.neutral { color: var(--muted); }
 
 /* ===== 結構樹 ===== */
-.ids-tree { font-family: ui-monospace, Menlo, monospace; font-size: .95rem; }
+.ids-tree { font-family: 'IDCGlyph', ui-monospace, Menlo, monospace; font-size: .95rem; }
 .ids-tree ul { list-style: none; margin: 0; padding-left: 18px; border-left: 1px dashed var(--border); }
 .ids-tree > ul { padding-left: 0; border-left: none; }
 .ids-tree li { padding: 2px 0; line-height: 1.5; }

@@ -19,3 +19,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Bundled font (Ideographic Description Characters fallback):
+
+public/apps/rare-glyph/fonts/BabelStoneHan-IDC-subset.woff2 — a modified
+subset (only U+2FF0–U+2FFF and U+31EF) of BabelStone Han by Andrew West,
+itself derived from the Arphic (文鼎) AR PL fonts. Licensed under the
+ARPHIC PUBLIC LICENSE — see public/apps/rare-glyph/fonts/ARPHIC_PUBLIC_LICENSE.txt.
+This subset is a modified version produced with fontTools/pyftsubset; the
+copyright and license notices are retained in the font's name table.
+Upstream: https://www.babelstone.co.uk/Fonts/Han.html
+  (c) Copyright 1994-1999, Arphic Technology Co., Ltd.
+  (c) Copyright 2009-2025, Andrew West.
