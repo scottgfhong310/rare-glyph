@@ -51,6 +51,7 @@ I18n.register('en', {
   'files.codeOnlyTag': 'no glyph',
   'files.unnamed': '(unnamed)',
   'detail.copyChar': 'Copy char',
+  'detail.ctext': 'Look up on ctext.org (Chinese Text Project)',
   'detail.removeEntry': 'Remove entry',
   'detail.codeOnlyType': 'Code-only entry (already in Unicode)',
   'toast.addedCodeOnly': 'Added a code-only entry (fill in the code, then save)',

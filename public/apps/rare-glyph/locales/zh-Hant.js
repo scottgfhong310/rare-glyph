@@ -54,6 +54,7 @@ I18n.register('zh-Hant', {
   'files.codeOnlyTag': '無字形',
   'files.unnamed': '(未命名)',
   'detail.copyChar': '複製對應字',
+  'detail.ctext': '在 ctext.org（中國哲學書電子化計劃）查此字',
   'detail.removeEntry': '移除登錄',
   'detail.codeOnlyType': '無字形登錄（已有對應 Unicode 字）',
   'toast.addedCodeOnly': '已新增無字形登錄（填入缺字碼後存檔）',

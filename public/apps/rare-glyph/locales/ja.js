@@ -51,6 +51,7 @@ I18n.register('ja', {
   'files.codeOnlyTag': '字形なし',
   'files.unnamed': '(未命名)',
   'detail.copyChar': '対応字をコピー',
+  'detail.ctext': 'ctext.org（中國哲學書電子化計劃）で調べる',
   'detail.removeEntry': '登録を削除',
   'detail.codeOnlyType': '字形なし登録（既に Unicode にある）',
   'toast.addedCodeOnly': '字形なし登録を追加しました（欠字コードを入力して保存）',

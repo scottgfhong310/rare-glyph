@@ -464,6 +464,9 @@
     du.textContent = uni;
     du.hidden = !uni;
     document.getElementById('detail-uni-copy').hidden = !uni;   // 行內複製 icon 隨對應字顯示
+    var ctext = document.getElementById('detail-uni-ctext');    // ctext.org 字典查詢連結
+    if (uni) { ctext.href = 'https://ctext.org/dictionary.pl?if=gb&char=' + encodeURIComponent(uni); ctext.hidden = false; }
+    else { ctext.hidden = true; ctext.removeAttribute('href'); }
     document.getElementById('uni-cp').textContent = uni ? cpHex(uni) : '';
     syncTextareas();
     refreshDirty();

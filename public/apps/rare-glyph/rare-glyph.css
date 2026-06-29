@@ -347,6 +347,7 @@ main { padding: 8px 0 56px; }
 }
 .uni-copy-btn:hover { color: var(--accent); border-color: var(--accent); }
 .uni-copy-btn i.material-icons { font-size: 18px; line-height: 1; }
+.uni-link-btn { text-decoration: none; }
 
 /* 「=」分隔只在同時有 svg 字形時顯示（純無字形登錄時不顯示） */
 .detail-preview.has-svg .detail-uni::before { content: "="; color: var(--muted); font-size: .4em; margin-right: .35em; vertical-align: middle; }
