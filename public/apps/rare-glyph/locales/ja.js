@@ -8,7 +8,8 @@ I18n.register('ja', {
   'tool.lang': '言語',
   'tool.download': '選択中の SVG をダウンロード',
   'tool.downloadPng': 'PNG をダウンロード（白地に黒字）',
-  'tool.save': 'IDS 登録を保存（glyphs.js に書き戻し）',
+  'tool.save': '登録を保存（glyphs.js に書き戻し）',
+  'tool.saveDirty': '● 未保存の変更があります — クリックで保存（glyphs.js に書き戻し）',
 
   'files.title': '欠字一覧',
   'files.upload': 'SVG をアップロード',

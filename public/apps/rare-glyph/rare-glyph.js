@@ -21,7 +21,8 @@
     metaByKey: {},      // { key: { ids, cbeta, code, uni } }
     current: null,      // 目前選中的 _key
     seq: 0,             // 未存檔無字形登錄的臨時 key 序號
-    filter: ''          // find 搜尋字串（小寫；跨 file/code/uni/ids/cbeta 比對）
+    filter: '',         // find 搜尋字串（小寫；跨 file/code/uni/ids/cbeta 比對）
+    savedByKey: {}      // 已存檔基準（key → 持久化快照）；與 metaByKey 比對得 dirty
   };
 
   /* ---------- 小工具 ---------- */
@@ -93,6 +94,41 @@
     return state.metaByKey[key];
   }
   function keyForServer(f) { return f.file ? f.file : ('code:' + (f.code || '')); }
+
+  /* ---------- 未存檔變更偵測（記憶體 vs glyphs.js 已存檔狀態） ----------
+   * state.savedByKey 為「上次載入／存檔時的持久化基準」；與當前 metaByKey 比對即得 dirty。*/
+  function entrySnap(key) {
+    var f = entryByKey(key), m = metaOf(key);
+    return { file: (f && f.file) || '', ids: m.ids || '', cbeta: m.cbeta || '', code: m.code || '', uni: m.uni || '', ts: m.timestamp || '' };
+  }
+  function snapshotCurrent() {
+    var snap = {};
+    state.files.forEach(function (f) { snap[f._key] = entrySnap(f._key); });
+    return snap;
+  }
+  function entryDirty(key) {
+    var sav = state.savedByKey[key];
+    if (!sav) return true;                                  // 新增、尚未存檔
+    return JSON.stringify(entrySnap(key)) !== JSON.stringify(sav);
+  }
+  function isDirty() {
+    var cur = {};
+    for (var i = 0; i < state.files.length; i++) {
+      var k = state.files[i]._key; cur[k] = 1;
+      if (entryDirty(k)) return true;
+    }
+    for (var sk in state.savedByKey) { if (!cur[sk]) return true; }   // 被移除但未存檔
+    return false;
+  }
+  // 更新存檔側鍵的「未存檔」提示（橘點 + accent + title）
+  function refreshDirty() {
+    var dirty = isDirty();
+    var btn = document.getElementById('setting-save');
+    if (btn) {
+      btn.classList.toggle('dirty', dirty);
+      btn.title = t(dirty ? 'tool.saveDirty' : 'tool.save');
+    }
+  }
 
   /* ---------- 主題 ---------- */
   function applyTheme(theme) {
@@ -288,7 +324,8 @@
       : t('files.count', { n: state.files.length });
     shown.forEach(function (f) {
       var cell = document.createElement('div');
-      cell.className = 'glyph-cell' + (f.file ? '' : ' codeonly') + (f._key === state.current ? ' active' : '');
+      cell.className = 'glyph-cell' + (f.file ? '' : ' codeonly') +
+        (f._key === state.current ? ' active' : '') + (entryDirty(f._key) ? ' dirty' : '');
       cell.dataset.key = f._key;
       cell.innerHTML = cellInner(f);
       cell.addEventListener('click', function () { selectEntry(f._key); });
@@ -309,6 +346,7 @@
     var f = entryByKey(key);
     if (!cell || !f) return;
     cell.innerHTML = cellInner(f);
+    cell.classList.toggle('dirty', entryDirty(key));
   }
 
   /* ---------- 選取 + 詳情 + 輸出 ---------- */
@@ -399,6 +437,7 @@
     document.getElementById('detail-uni-copy').hidden = !uni;   // 行內複製 icon 隨對應字顯示
     document.getElementById('uni-cp').textContent = uni ? cpHex(uni) : '';
     syncTextareas();
+    refreshDirty();
   }
 
   function setAttr(el, name, val) { if (val) el.setAttribute(name, val); else el.removeAttribute(name); }
@@ -473,14 +512,16 @@
       var prevFiles = state.files || [];
       var newMeta = {};
       var newFiles = [];
+      var saved = {};   // 已存檔基準＝伺服器（持久化）值
       // 伺服器條目：已在記憶體者保留其（可能未存檔的）編輯，否則取伺服器值
       files.forEach(function (f) {
         f._key = keyForServer(f);
         newMeta[f._key] = prevMeta[f._key] ||
           { ids: f.ids || '', cbeta: f.cbeta || '', code: f.code || '', uni: f.uni || '', timestamp: f.timestamp || '' };
+        saved[f._key] = { file: f.file || '', ids: f.ids || '', cbeta: f.cbeta || '', code: f.code || '', uni: f.uni || '', ts: f.timestamp || '' };
         newFiles.push(f);
       });
-      // 保留尚未存檔的無字形登錄（'new:' 鍵；upload/reload 不致遺失）
+      // 保留尚未存檔的無字形登錄（'new:' 鍵；upload/reload 不致遺失）；不進 saved → 標記為 dirty
       prevFiles.forEach(function (pf) {
         if (String(pf._key).indexOf('new:') !== 0) return;
         newMeta[pf._key] = prevMeta[pf._key] || { ids: '', cbeta: '', code: '', uni: '', timestamp: '' };
@@ -488,9 +529,11 @@
       });
       state.metaByKey = newMeta;
       state.files = newFiles;
+      state.savedByKey = saved;
       renderGrid();
       if (state.current && state.metaByKey[state.current]) selectEntry(state.current);
       else resetDetail();
+      refreshDirty();
     }).catch(function (err) {
       toast(t('toast.listFail', { e: err.message }), 'red');
     }).then(function () { hideLoading(); });
@@ -546,9 +589,11 @@
           f._key = nk;
         }
       });
+      state.savedByKey = snapshotCurrent();   // 重設已存檔基準 → 清除未存檔提示
       renderGrid();
       if (state.current) selectEntry(state.current);
       if (el) setIconDone(el);
+      refreshDirty();
       toast(t('toast.saved', { n: r.count }), 'teal');
     }).catch(function (err) {
       hideLoading();
@@ -584,6 +629,7 @@
       state.files = state.files.filter(function (f) { return f._key !== key; });
       resetDetail();
       renderGrid();
+      refreshDirty();
       if (wasSaved) saveRegistry();           // 寫回 glyphs.js（已持久化過 → 需更新）
       else toast(t('toast.removed'), 'grey');  // 未存檔 → 純記憶體移除
     }
@@ -634,6 +680,7 @@
   function relocalizeDynamic() {
     renderPalette();
     renderGrid();
+    refreshDirty();   // 重設存檔鍵 title（I18n.apply 會把 data-i18n-title 蓋回非 dirty 版）
     if (state.current) selectEntry(state.current);
     else { var res = Lib.parseIds(document.getElementById('ids-input').value); renderValidate(res); renderTree(res); }
   }
@@ -692,6 +739,11 @@
     });
 
     document.addEventListener('i18n:changed', relocalizeDynamic);
+
+    // 有未存檔變更時，重新整理／關閉分頁前瀏覽器攔截確認
+    window.addEventListener('beforeunload', function (e) {
+      if (isDirty()) { e.preventDefault(); e.returnValue = ''; }
+    });
   }
 
   /* ---------- 啟動 ---------- */

@@ -189,8 +189,26 @@ main { padding: 8px 0 56px; }
   transition: border-color .15s, background .15s, transform .1s;
   text-align: center;
 }
+.glyph-cell { position: relative; }
 .glyph-cell:hover { border-color: var(--accent); transform: translateY(-1px); }
 .glyph-cell.active { border-color: var(--accent); background: var(--surface-2); }
+/* 未存檔變更：格右上角橘點 */
+.glyph-cell.dirty::after {
+  content: '';
+  position: absolute; top: 5px; right: 5px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #ff9800;
+}
+
+/* 未存檔變更：存檔側鍵亮 accent + 橘點徽章 */
+#setting-save { position: relative; }
+#setting-save.dirty { color: var(--accent); border-color: var(--accent); }
+#setting-save.dirty::after {
+  content: '';
+  position: absolute; top: 4px; right: 4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #ff9800; border: 2px solid var(--tool-bg);
+}
 .glyph-cell .cell-name {
   font-size: .68rem;
   color: var(--muted);

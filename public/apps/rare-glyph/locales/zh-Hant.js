@@ -9,7 +9,8 @@ I18n.register('zh-Hant', {
   'tool.lang': '語言',
   'tool.download': '下載目前選中的 SVG',
   'tool.downloadPng': '下載 PNG（白底黑字）',
-  'tool.save': '存檔 IDS 登錄（寫回 glyphs.js）',
+  'tool.save': '存檔登錄（寫回 glyphs.js）',
+  'tool.saveDirty': '● 有未存檔的變更——點擊存檔（寫回 glyphs.js）',
 
   /* 左：缺字清單 */
   'files.title': '缺字清單',

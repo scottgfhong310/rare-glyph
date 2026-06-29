@@ -8,7 +8,8 @@ I18n.register('en', {
   'tool.lang': 'Language',
   'tool.download': 'Download the selected SVG',
   'tool.downloadPng': 'Download PNG (black on white)',
-  'tool.save': 'Save IDS registry (write back glyphs.js)',
+  'tool.save': 'Save registry (write back glyphs.js)',
+  'tool.saveDirty': '● Unsaved changes — click to save (write back glyphs.js)',
 
   'files.title': 'Glyphs',
   'files.upload': 'Upload SVG',
