@@ -208,6 +208,22 @@ main { padding: 8px 0 56px; }
 }
 .qc-btn .qc-cap { font-size: .72rem; color: var(--muted); }
 
+/* 自繪按鈕（IDC / CBETA 調色盤、常用字、對應字 icon）不採用 Materialize 對 <button>
+ * 的互動底色（teal）；hover/focus/active 一律維持 app token 的底色。
+ * 深色模式下這些按鈕文字一律 #fff，避免任何底色上低對比。 */
+.idc-btn:hover, .idc-btn:focus, .idc-btn:active,
+.qc-btn:hover, .qc-btn:focus, .qc-btn:active,
+.uni-copy-btn:hover, .uni-copy-btn:focus, .uni-copy-btn:active {
+  background-color: var(--surface);
+}
+.find-clear:hover, .find-clear:focus, .find-clear:active { background-color: transparent; }
+[data-theme="dark"] .idc-btn,
+[data-theme="dark"] .idc-btn .idc-op,
+[data-theme="dark"] .idc-btn .idc-arity,
+[data-theme="dark"] .qc-btn,
+[data-theme="dark"] .qc-btn .qc-char,
+[data-theme="dark"] .qc-btn .qc-cap { color: #fff; }
+
 .glyph-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
