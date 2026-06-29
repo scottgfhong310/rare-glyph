@@ -1,0 +1,24 @@
+{
+  "name": "rare-glyph",
+  "version": "1.0.0",
+  "description": "經典中罕見字管理：缺字 SVG 語料策劃 + IDS Builder（Unicode Ideographic Description Sequences），產生家族 .glyph span。三語 i18n、light/dark（Express + Materialize）。",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "ids",
+    "ideographic-description",
+    "gaiji",
+    "rare-glyph",
+    "cjk",
+    "express",
+    "materialize"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.0"
+  }
+}

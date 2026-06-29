@@ -1,0 +1,20 @@
+# 依賴
+node_modules/
+
+# 系統檔
+.DS_Store
+Thumbs.db
+
+# 編輯器 / 工具
+.vscode/
+.claude/
+
+# 日誌
+*.log
+
+# 上傳 / 寫回前的自動備份
+.bak/
+
+# 缺字 SVG 語料放 /public/lib/Typeface/svgs/（家族共用 Typeface 路徑）。
+# 標準 repo 只附少量 sample；完整語料留在本地／孵化器，不進版控。
+# 保留資料夾結構與 sample，其餘上傳檔不追蹤。

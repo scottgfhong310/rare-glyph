@@ -1,0 +1,52 @@
+/* rare-glyph 右側浮動工具列（家族招牌元件 .side-tool）
+ * 採 DESIGN_GUIDELINES §5.5〔正統〕：按鈕包進一個 .side-tools flex 容器，
+ * 由 flex 自動堆疊（不綁固定 id 數量／順序），顏色走 token 隨 light/dark 切換。
+ */
+
+:root {
+  --tool-top: 25vh;
+  --tool-size: 46px;
+  --tool-gap: 9px;
+}
+
+.side-tools {
+  position: fixed;
+  right: 16px;
+  top: var(--tool-top);
+  display: flex;
+  flex-direction: column;
+  gap: var(--tool-gap);
+  z-index: 1002;
+}
+
+.side-tool {
+  width: var(--tool-size);
+  height: var(--tool-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--tool-fg);
+  background: var(--tool-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+  transition: transform .1s ease, filter .15s ease, background .15s ease, color .15s ease, opacity .15s ease;
+  user-select: none;
+}
+
+.side-tool:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.side-tool:active { transform: translateY(0); }
+.side-tool i.material-icons { font-size: 22px; line-height: 1; }
+
+/* toggle 開啟狀態以 accent 色標示 */
+.side-tool.active { color: var(--accent); border-color: var(--accent); }
+
+/* 警示鍵（清空/刪除）hover 轉紅 */
+#setting-clear:hover { color: #ff6e6e; }
+
+/* 側欄（檔案清單）開啟時整排工具淡出 */
+body.sidenav-open .side-tools { opacity: 0; pointer-events: none; }
+
+/* 列印時隱藏 */
+@media print { .side-tools { display: none !important; } }

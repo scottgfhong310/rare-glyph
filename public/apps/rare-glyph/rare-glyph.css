@@ -1,0 +1,382 @@
+/* rare-glyph（經典中罕見字管理）— 頁面樣式
+ * 含主題 token（light/dark）與本頁專屬樣式；共用工具列在 side-tool.css、
+ * 載入點在 thinking-dot.css、Materialize 元件深色在 materialize-dark.css。
+ */
+
+/* ===== 主題變數（light / dark 由 <html data-theme> 切換） ===== */
+:root,
+[data-theme="dark"] {
+  --bg: #0f1115;
+  --surface: #161a22;
+  --surface-2: #1b2030;
+  --text: #e8eaf0;
+  --muted: #a8b0c0;
+  --border: rgba(255, 255, 255, 0.12);
+  --accent: #90caf9;
+  --card-bg: #0f1115;
+  --tool-bg: #1b2030;
+  --tool-fg: #e8eaf0;
+  --overlay: rgba(10, 14, 22, 0.84);
+  --drop-border: #3a4252;
+  --ok: #69d18a;
+  --err: #ff6e6e;
+  /* Materialize 元件強調色對齊 app 的 --accent（materialize-dark.css 預設 teal） */
+  --mz-primary: var(--accent);
+  --mz-focus: var(--accent);
+}
+
+[data-theme="light"] {
+  --bg: #f6f8fa;
+  --surface: #ffffff;
+  --surface-2: #eef1f5;
+  --text: #1f2328;
+  --muted: #57606a;
+  --border: rgba(0, 0, 0, 0.12);
+  --accent: #0969da;
+  --card-bg: #ffffff;
+  --tool-bg: #ffffff;
+  --tool-fg: #1f2328;
+  --overlay: rgba(240, 243, 247, 0.86);
+  --drop-border: #c4ccd6;
+  --ok: #1a7f37;
+  --err: #cf222e;
+}
+
+/* Materialize 元件跟 app 的 --accent（兩主題共用一份映射，特異度對齊 materialize-dark） */
+html.dark-mode, html.light-mode {
+  --mz-primary: var(--accent);
+  --mz-focus: var(--accent);
+  --mz-surface: var(--surface);
+}
+
+/* materialize-dark.css 的 html.dark-mode body 會以較高特異度蓋掉我們的 body 底色／文字色；
+ * 用同特異度、較後載入的規則把頁面底色拉回 app token。 */
+html.dark-mode body, html.light-mode body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+body { transition: background .2s ease, color .2s ease; }
+
+/* hidden 屬性需勝過下方 .pane-empty / .detail-empty 的 display:flex（class 選擇器會蓋過 UA 的 [hidden]） */
+[hidden] { display: none !important; }
+
+/* ===== 頂列 ===== */
+.rg-topbar {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 94%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 18px 0 6px;
+}
+.rg-title { font-size: 1.4rem; font-weight: 700; margin: 0; }
+.rg-subtitle { font-size: .85rem; color: var(--muted); }
+
+main { padding: 8px 0 56px; }
+
+/* ===== 三欄版面 ===== */
+.rg-layout {
+  width: 94%;
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(320px, 1.2fr) minmax(280px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+/* 寬螢幕：右緣讓出空間給浮動工具列 */
+@media (min-width: 1100px) { .rg-layout { padding-right: 64px; } }
+/* 窄螢幕：堆疊 */
+@media (max-width: 1000px) {
+  .rg-layout { grid-template-columns: 1fr; padding-right: 0; }
+  .rg-files.collapsed { display: none; }
+}
+
+.rg-pane {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: none;
+}
+
+.pane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.pane-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.pane-title .material-icons { font-size: 20px; color: var(--muted); }
+.pane-meta { font-size: .78rem; color: var(--muted); margin-bottom: 10px; }
+.pane-actions { margin-left: auto; display: flex; gap: 2px; flex-wrap: wrap; justify-content: flex-end; }
+.rg-head-btn { color: var(--accent) !important; padding: 0 8px !important; }
+
+/* ===== 缺字 SVG 網格 ===== */
+/* ===== find 搜尋框（跨欄位過濾缺字清單） ===== */
+.glyph-find {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 3px 8px;
+  margin-bottom: 10px;
+}
+.glyph-find:focus-within { border-color: var(--accent); }
+.glyph-find > i.material-icons { font-size: 18px; color: var(--muted); flex: 0 0 auto; }
+.glyph-find input.browser-default {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: .85rem;
+  outline: none;
+  height: auto;
+  margin: 0;
+  padding: 5px 0;
+}
+.glyph-find input.browser-default::placeholder { color: var(--muted); opacity: .8; }
+.find-clear {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px; height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.find-clear:hover { color: var(--accent); }
+.find-clear i.material-icons { font-size: 16px; line-height: 1; }
+
+.glyph-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 10px;
+}
+.glyph-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--surface);
+  transition: border-color .15s, background .15s, transform .1s;
+  text-align: center;
+}
+.glyph-cell:hover { border-color: var(--accent); transform: translateY(-1px); }
+.glyph-cell.active { border-color: var(--accent); background: var(--surface-2); }
+.glyph-cell .cell-name {
+  font-size: .68rem;
+  color: var(--muted);
+  word-break: break-all;
+  line-height: 1.25;
+}
+.glyph-cell .cell-ids { font-size: .9rem; line-height: 1; min-height: .9rem; }
+.glyph-cell .cell-ids.empty::before { content: "—"; color: var(--muted); opacity: .5; }
+
+/* 無字形登錄格：以對應 Unicode 字（正常字型）取代 mask 字形 */
+.glyph-cell.codeonly { border-style: dashed; }
+.glyph-cell.codeonly .cell-char { font-size: 40px; line-height: 1; color: var(--text); }
+.glyph-cell.codeonly .cell-char-empty { color: var(--muted); opacity: .5; }
+.glyph-cell .cell-tag { font-size: .58rem; color: var(--muted); border: 1px solid var(--border); border-radius: 6px; padding: 0 5px; }
+
+.pane-empty, .detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--muted);
+  padding: 28px 12px;
+  gap: 6px;
+}
+.pane-empty .material-icons, .detail-empty .material-icons { font-size: 48px; opacity: .7; }
+.pane-empty code, .files-empty code { background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+
+/* ===== 缺字 .glyph（mask + currentColor，dark/列印皆正確；與 markdown-library 慣例相容） ===== */
+.glyph {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  background-color: currentColor;
+  -webkit-mask: var(--g) center / contain no-repeat;
+  mask: var(--g) center / contain no-repeat;
+}
+.nowrap { white-space: nowrap; }
+.glyph-cell .glyph { font-size: 40px; }
+
+/* ===== IDC 調色盤 ===== */
+.idc-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.idc-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 6px 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.idc-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.idc-btn:active { transform: translateY(0); }
+.idc-btn .idc-op { font-size: 1.5rem; line-height: 1.1; }
+.idc-btn .idc-arity { font-size: .62rem; color: var(--muted); }
+
+/* ===== 輸入欄 ===== */
+.field-label { font-size: .8rem; color: var(--muted); margin: 8px 0 4px; display: block; }
+
+/* IDS / span 輸入欄：用 Materialize 原生 textarea（§5.7）；只調字體與間距，不動其底線視覺語言。 */
+.input-field { margin: 1.6rem 0 .6rem; }                 /* 加大與上方內容（調色盤 / 缺字預覽）的間距 */
+.input-field .helper-text { color: var(--muted); }       /* 說明提示置於 textarea 下方；兩主題皆可讀 */
+#ids-input.materialize-textarea,
+#span-output.materialize-textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  line-height: 1.6;
+}
+#ids-input.materialize-textarea { font-size: 1.4rem; }
+#span-output.materialize-textarea { font-size: .82rem; }
+
+.ids-actions, .detail-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.ids-actions .btn-flat, .detail-actions .btn-flat { color: var(--accent); }
+.detail-actions .detail-del:hover { color: var(--err) !important; }
+
+/* ===== 驗證徽章 ===== */
+.ids-validate { font-size: .85rem; margin: 10px 0; min-height: 1.2em; display: flex; align-items: center; gap: 6px; }
+.ids-validate .material-icons { font-size: 18px; }
+.ids-validate.ok { color: var(--ok); }
+.ids-validate.err { color: var(--err); }
+.ids-validate.neutral { color: var(--muted); }
+
+/* ===== 結構樹 ===== */
+.ids-tree { font-family: ui-monospace, Menlo, monospace; font-size: .95rem; }
+.ids-tree ul { list-style: none; margin: 0; padding-left: 18px; border-left: 1px dashed var(--border); }
+.ids-tree > ul { padding-left: 0; border-left: none; }
+.ids-tree li { padding: 2px 0; line-height: 1.5; }
+.ids-tree .node-op { color: var(--accent); font-weight: 700; }
+.ids-tree .node-op .op-name { color: var(--muted); font-weight: 400; font-size: .78rem; margin-left: 6px; }
+.ids-tree .node-leaf { color: var(--text); }
+.ids-tree .node-leaf .leaf-cp { color: var(--muted); font-size: .72rem; margin-left: 6px; }
+.ids-tree .tree-empty { color: var(--muted); }
+
+/* ===== 詳情 ===== */
+.detail-preview { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.detail-glyph { font-size: 72px; flex: 0 0 auto; }
+/* 對應 Unicode 字：以正常字型顯示（非 mask），供與缺字字形並列比對 */
+.detail-uni { font-size: 64px; line-height: 1; flex: 0 0 auto; color: var(--text); }
+/* 對應字後面的行內複製 icon */
+.uni-copy-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  align-self: center;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.uni-copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+.uni-copy-btn i.material-icons { font-size: 18px; line-height: 1; }
+
+/* 「=」分隔只在同時有 svg 字形時顯示（純無字形登錄時不顯示） */
+.detail-preview.has-svg .detail-uni::before { content: "="; color: var(--muted); font-size: .4em; margin-right: .35em; vertical-align: middle; }
+/* 內文渲染預覽：無字形登錄時以正常字型顯示對應字（取消 mask） */
+.rendered-glyph.as-char { -webkit-mask: none !important; mask: none !important; background: none !important; width: auto; height: auto; color: var(--text); }
+/* code / uni 兩欄全寬堆疊：給浮動標籤足夠寬度，避免長標籤（如英文 Corresponding Unicode char）折行 */
+.detail-codeuni { display: block; }
+.detail-codeuni .input-field label { white-space: nowrap; }
+.detail-codeuni input[type="text"] { color: var(--text); }
+.cell-uni { font-size: .8rem; line-height: 1; color: var(--accent); }
+.detail-meta { min-width: 0; }
+.detail-code { font-size: 1rem; font-weight: 600; word-break: break-all; }
+.detail-file { font-size: .76rem; color: var(--muted); word-break: break-all; }
+.detail-rendered { margin-top: 14px; }
+.rendered-line { font-size: 1.15rem; line-height: 2; margin: 4px 0 0; }
+.detail-rendered .glyph { font-size: 1.15rem; }
+
+/* ===== 全頁拖拉覆蓋層 ===== */
+#drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+#drop-overlay.show { display: flex; }
+#drop-overlay .drop-box {
+  border: 3px dashed var(--accent);
+  border-radius: 16px;
+  padding: 40px 64px;
+  text-align: center;
+  color: var(--text);
+  font-size: 1.2rem;
+}
+#drop-overlay .material-icons { font-size: 72px; color: var(--accent); display: block; margin-bottom: 8px; }
+
+/* ===== 載入動畫 ===== */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+#loading.show { display: flex; }
+#loading .thinking-dot { --td-color: var(--accent); }
+#loading .loading-text { color: var(--muted); font-size: .9rem; letter-spacing: .05em; }
+
+/* ===== 列印 ===== */
+@media print {
+  .side-tools, #drop-overlay, #loading, #toast-container { display: none !important; }
+  html, body { background: #fff !important; color: #000 !important; }
+  .rg-pane { border: none !important; }
+}

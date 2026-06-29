@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title data-i18n-doctitle="title.page">經典中罕見字管理</title>
+
+  <!-- 防主題閃爍（FOUC）：render 前先設好 data-theme 與 dark-mode/light-mode class（materialize-dark.css 需要） -->
+  <script>
+    try {
+      var t = localStorage.getItem('rare-glyph-theme') || 'dark';
+      var r = document.documentElement;
+      r.dataset.theme = t;
+      r.classList.toggle('dark-mode', t === 'dark');
+      r.classList.toggle('light-mode', t === 'light');
+    } catch (e) {}
+  </script>
+
+  <!-- 第三方（CDN，鎖版本） -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <!-- 主題：materialize.css → materialize-dark.css → 本頁樣式 -->
+  <link rel="stylesheet" href="materialize-dark.css">
+  <link rel="stylesheet" href="rare-glyph.css">
+  <link rel="stylesheet" href="side-tool.css">
+  <link rel="stylesheet" href="thinking-dot.css">
+
+  <!-- i18n 引擎 → 各語言檔 → 核心 lib（同步載入） -->
+  <script src="i18n.js"></script>
+  <script src="locales/zh-Hant.js"></script>
+  <script src="locales/en.js"></script>
+  <script src="locales/ja.js"></script>
+  <script src="rare-glyph-lib.js"></script>
+  <!-- IDS 登錄（window.RG_GLYPHS）；reader 直接 <script> 載入免 fetch -->
+  <script src="glyphs.js"></script>
+
+  <!-- 控制器最後執行（DOM 與依賴皆就緒） -->
+  <script defer src="rare-glyph.js"></script>
+</head>
+
+<body>
+  <!-- ===== 右側浮動工具列 ===== -->
+  <div class="side-tools">
+    <div class="side-tool" id="setting-menu" data-i18n-title="tool.menu" title="檔案清單">
+      <i class="material-icons">folder_open</i>
+    </div>
+    <div class="side-tool" id="setting-download" data-i18n-title="tool.download" title="下載目前的 SVG" style="display:none">
+      <i class="material-icons">file_download</i>
+    </div>
+    <div class="side-tool" id="setting-download-png" data-i18n-title="tool.downloadPng" title="下載 PNG（白底黑字）" style="display:none">
+      <i class="material-icons">image</i>
+    </div>
+    <div class="side-tool" id="setting-mode" data-i18n-title="tool.mode" title="切換 light / dark">
+      <i class="material-icons">dark_mode</i>
+    </div>
+    <div class="side-tool" id="setting-lang" data-i18n-title="tool.lang" title="語言">
+      <i class="material-icons">translate</i>
+    </div>
+    <div class="side-tool" id="setting-save" data-i18n-title="tool.save" title="存檔 IDS 登錄">
+      <i class="material-icons">save</i>
+    </div>
+  </div>
+
+  <header class="rg-topbar">
+    <h1 class="rg-title" data-i18n="title.page">經典中罕見字管理</h1>
+    <span class="rg-subtitle" data-i18n="title.sub">IDS Builder · Ideographic Description Sequences</span>
+  </header>
+
+  <main>
+    <div class="rg-layout">
+
+      <!-- ===== 左：缺字 SVG 清單 ===== -->
+      <section class="rg-pane rg-files" id="files-pane">
+        <div class="pane-head">
+          <span class="pane-title"><i class="material-icons">grid_view</i><span data-i18n="files.title">缺字清單</span></span>
+          <span class="pane-actions">
+            <button class="btn-flat rg-head-btn" id="add-codeonly" data-i18n-title="files.addCodeOnly" title="新增無字形登錄">
+              <i class="material-icons left">add</i><span data-i18n="files.addCodeOnly">新增無字形</span>
+            </button>
+            <button class="btn-flat rg-head-btn" id="upload-btn">
+              <i class="material-icons left">cloud_upload</i><span data-i18n="files.upload">上傳 SVG</span>
+            </button>
+          </span>
+          <input type="file" id="file-input" accept=".svg,image/svg+xml" multiple hidden>
+        </div>
+        <div class="glyph-find">
+          <i class="material-icons">search</i>
+          <input type="text" id="glyph-find" class="browser-default" spellcheck="false" autocomplete="off"
+                 data-i18n-placeholder="files.findPh" placeholder="搜尋 缺字碼 / 對應字 / IDS / CBETA / 檔名…">
+          <button class="find-clear" id="glyph-find-clear" hidden data-i18n-title="files.findClear" title="清除搜尋">
+            <i class="material-icons">close</i>
+          </button>
+        </div>
+        <div class="pane-meta" id="files-meta" data-i18n="files.loading">載入中…</div>
+        <div class="glyph-grid" id="glyph-grid"></div>
+        <div class="pane-empty" id="files-empty" hidden>
+          <i class="material-icons">image_search</i>
+          <p data-i18n-html="files.empty">尚無缺字 SVG。把 <code>.svg</code> 拖進來，或按「上傳 SVG」。</p>
+        </div>
+      </section>
+
+      <!-- ===== 中：IDS Builder ===== -->
+      <section class="rg-pane rg-builder">
+        <div class="pane-head">
+          <span class="pane-title"><i class="material-icons">account_tree</i><span data-i18n="ids.title">IDS Builder</span></span>
+        </div>
+
+        <!-- IDC 運算子調色盤（由 JS 依 RareGlyphLib.IDC 產生） -->
+        <div class="idc-palette" id="idc-palette"></div>
+
+        <!-- IDS 輸入欄（Materialize 原生 textarea；說明改為下方 helper-text） -->
+        <div class="input-field ids-field">
+          <textarea id="ids-input" class="materialize-textarea" spellcheck="false"
+                    data-i18n-placeholder="ids.placeholder" placeholder="例：⿰口洛"></textarea>
+          <span class="helper-text" data-i18n="ids.inputLabel">IDS 描述（點上方運算子插入，或直接輸入組件字）</span>
+        </div>
+
+        <div class="ids-actions">
+          <button class="btn-flat" id="ids-copy">
+            <i class="material-icons left">content_copy</i><span data-i18n="ids.copy">複製 IDS</span>
+          </button>
+          <button class="btn-flat" id="ids-clear">
+            <i class="material-icons left">backspace</i><span data-i18n="ids.clear">清空</span>
+          </button>
+        </div>
+
+        <!-- 驗證徽章 -->
+        <div class="ids-validate" id="ids-validate"></div>
+
+        <!-- 結構樹 -->
+        <div class="field-label" data-i18n="ids.tree">結構樹</div>
+        <div class="ids-tree" id="ids-tree"></div>
+
+        <!-- CBETA 組字式 -->
+        <div class="field-label cbeta-title" data-i18n="cbeta.title">CBETA 組字式</div>
+        <div class="input-field cbeta-field">
+          <textarea id="cbeta-input" class="materialize-textarea" spellcheck="false"
+                    data-i18n-placeholder="cbeta.placeholder" placeholder="例：口*洛"></textarea>
+          <span class="helper-text" data-i18n-html="cbeta.hint">依 <a href="https://cbeta.org/character-composition-rules" target="_blank" rel="noopener">CBETA 組字規則</a> 描述（如 <code>口*洛</code>、<code>木*(於-方)</code>）</span>
+        </div>
+        <div class="ids-actions">
+          <button class="btn-flat" id="cbeta-copy">
+            <i class="material-icons left">content_copy</i><span data-i18n="cbeta.copy">複製組字式</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ===== 右：選中字的詳情 + 產生的 span ===== -->
+      <section class="rg-pane rg-detail">
+        <div class="pane-head">
+          <span class="pane-title"><i class="material-icons">description</i><span data-i18n="detail.title">缺字詳情</span></span>
+        </div>
+
+        <div class="detail-empty" id="detail-empty">
+          <i class="material-icons">touch_app</i>
+          <p data-i18n="detail.empty">從左側選一個缺字，編輯它的 IDS，並取得可貼到佛典文件的 span。</p>
+        </div>
+
+        <div class="detail-body" id="detail-body" hidden>
+          <div class="detail-preview">
+            <span class="glyph detail-glyph" id="detail-glyph" role="img"></span>
+            <span class="detail-uni" id="detail-uni" hidden title="對應 Unicode 字"></span>
+            <button class="uni-copy-btn" id="detail-uni-copy" hidden data-i18n-title="detail.copyChar" title="複製對應字">
+              <i class="material-icons">content_copy</i>
+            </button>
+            <div class="detail-meta">
+              <div class="detail-code" id="detail-code"></div>
+              <div class="detail-file" id="detail-file"></div>
+            </div>
+          </div>
+
+          <!-- 缺字碼 ↔ 對應 Unicode 字 -->
+          <div class="detail-codeuni">
+            <div class="input-field">
+              <input type="text" id="code-input" spellcheck="false"
+                     data-i18n-placeholder="code.placeholder" placeholder="例：T014461">
+              <label for="code-input" data-i18n="code.label">大正藏 / CBETA 缺字碼</label>
+            </div>
+            <div class="input-field">
+              <input type="text" id="uni-input" spellcheck="false" maxlength="8"
+                     data-i18n-placeholder="uni.placeholder" placeholder="例：𢤱">
+              <label for="uni-input" data-i18n="uni.label">對應 Unicode 字</label>
+              <span class="helper-text" id="uni-cp"></span>
+            </div>
+          </div>
+
+          <div class="input-field span-field">
+            <textarea id="span-output" class="materialize-textarea" readonly spellcheck="false"></textarea>
+            <span class="helper-text" data-i18n="detail.spanLabel">產生的 span（貼到 markdown-library / markdown-reader 文件）</span>
+          </div>
+          <div class="detail-actions">
+            <button class="btn-flat" id="span-copy">
+              <i class="material-icons left">content_copy</i><span data-i18n="detail.copySpan">複製 span</span>
+            </button>
+            <button class="btn-flat" id="char-copy" hidden>
+              <i class="material-icons left">content_copy</i><span data-i18n="detail.copyChar">複製對應字</span>
+            </button>
+            <button class="btn-flat detail-del" id="detail-delete">
+              <i class="material-icons left">delete_sweep</i><span class="del-label" data-i18n="detail.delete">刪除 SVG</span>
+            </button>
+          </div>
+
+          <div class="detail-rendered">
+            <span class="field-label" data-i18n="detail.rendered">內文渲染預覽</span>
+            <p class="rendered-line">
+              經典中作<span class="nowrap">「<span class="glyph rendered-glyph" id="rendered-glyph" role="img"></span>」</span>字。
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- 全頁拖拉上傳覆蓋層 -->
+  <div id="drop-overlay">
+    <div class="drop-box">
+      <i class="material-icons">cloud_upload</i>
+      <div data-i18n="drop.hint">放開以上傳 SVG 到 /lib/Typeface/svgs/</div>
+    </div>
+  </div>
+
+  <!-- 載入動畫 -->
+  <div id="loading">
+    <span class="thinking-dot"></span>
+    <span class="loading-text" data-i18n="loading">載入中…</span>
+  </div>
+</body>
+</html>
