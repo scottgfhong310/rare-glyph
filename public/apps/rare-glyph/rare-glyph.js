@@ -162,15 +162,44 @@
     });
   }
 
-  function insertAtCursor(text) {
-    var ta = document.getElementById('ids-input');
+  // 在 textarea 游標處插入 text；back＝插入後游標回退字數（如插入 '()' 時 back=1 置於括號內）
+  function insertAtCaret(ta, text, back) {
     var s = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
     var en = ta.selectionEnd != null ? ta.selectionEnd : ta.value.length;
     ta.value = ta.value.slice(0, s) + text + ta.value.slice(en);
-    var pos = s + text.length;
+    var pos = s + text.length - (back || 0);
     ta.focus();
     ta.setSelectionRange(pos, pos);
+  }
+  function insertAtCursor(text) {
+    insertAtCaret(document.getElementById('ids-input'), text, 0);
     onIdsInput();
+  }
+
+  /* ---------- CBETA 組字運算子調色盤 ---------- */
+  var CBETA_OPS = [
+    { op: '*', key: 'cbetaop.lr' },        // 左右
+    { op: '/', key: 'cbetaop.tb' },        // 上下
+    { op: '@', key: 'cbetaop.surround' },  // 包圍
+    { op: '-', key: 'cbetaop.sub' },       // 減（移除部件）
+    { op: '+', key: 'cbetaop.add' },       // 加（增添部件）
+    { op: '()', key: 'cbetaop.group', back: 1 }  // 群組（游標置於括號內）
+  ];
+  function renderCbetaPalette() {
+    var pal = document.getElementById('cbeta-palette');
+    pal.innerHTML = '';
+    CBETA_OPS.forEach(function (e) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'idc-btn';
+      b.title = t(e.key) + '（' + e.op + '）';
+      b.innerHTML = '<span class="idc-op">' + e.op + '</span><span class="idc-arity">' + escHtml(t(e.key)) + '</span>';
+      b.addEventListener('click', function () {
+        insertAtCaret(document.getElementById('cbeta-input'), e.op, e.back || 0);
+        onCbetaInput();
+      });
+      pal.appendChild(b);
+    });
   }
 
   /* ---------- IDS 驗證 + 結構樹 ---------- */
@@ -679,6 +708,7 @@
   /* ---------- i18n 重繪 ---------- */
   function relocalizeDynamic() {
     renderPalette();
+    renderCbetaPalette();
     renderGrid();
     refreshDirty();   // 重設存檔鍵 title（I18n.apply 會把 data-i18n-title 蓋回非 dirty 版）
     if (state.current) selectEntry(state.current);
@@ -751,6 +781,7 @@
     initTheme();
     window.I18n.apply(document);
     renderPalette();
+    renderCbetaPalette();
     bind();
     initDragDrop();
     onIdsInput();          // 初始驗證徽章（空 → neutral）

@@ -261,12 +261,14 @@ main { padding: 8px 0 56px; }
 .glyph-cell .glyph { font-size: 40px; }
 
 /* ===== IDC 調色盤 ===== */
-.idc-palette {
+.idc-palette,
+.cbeta-palette {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
   gap: 6px;
   margin-bottom: 14px;
 }
+.cbeta-palette { margin-top: 6px; }
 .idc-btn {
   display: flex;
   flex-direction: column;

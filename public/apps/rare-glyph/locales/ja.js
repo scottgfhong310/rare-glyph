@@ -33,6 +33,12 @@ I18n.register('ja', {
   'cbeta.placeholder': '例：口*洛',
   'cbeta.hint': '<a href="https://cbeta.org/character-composition-rules" target="_blank" rel="noopener">CBETA 組字規則</a>に従って記述（例：<code>口*洛</code>、<code>木*(於-方)</code>）',
   'cbeta.copy': '組字式をコピー',
+  'cbetaop.lr': '左右',
+  'cbetaop.tb': '上下',
+  'cbetaop.surround': '囲み',
+  'cbetaop.sub': '減（部品を除く）',
+  'cbetaop.add': '加（部品を足す）',
+  'cbetaop.group': 'グループ',
 
   /* 欠字コード ↔ 対応 Unicode 文字 */
   'code.label': '大正蔵 / CBETA 欠字コード',

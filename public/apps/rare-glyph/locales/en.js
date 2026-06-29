@@ -33,6 +33,12 @@ I18n.register('en', {
   'cbeta.placeholder': 'e.g. 口*洛',
   'cbeta.hint': 'Describe per the <a href="https://cbeta.org/character-composition-rules" target="_blank" rel="noopener">CBETA composition rules</a> (e.g. <code>口*洛</code>, <code>木*(於-方)</code>)',
   'cbeta.copy': 'Copy composition',
+  'cbetaop.lr': 'left-right',
+  'cbetaop.tb': 'top-bottom',
+  'cbetaop.surround': 'surround',
+  'cbetaop.sub': 'subtract',
+  'cbetaop.add': 'add',
+  'cbetaop.group': 'group',
 
   /* glyph code ↔ corresponding Unicode char */
   'code.label': 'Taishō / CBETA glyph code',

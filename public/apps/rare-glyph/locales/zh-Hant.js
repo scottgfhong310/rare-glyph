@@ -36,6 +36,12 @@ I18n.register('zh-Hant', {
   'cbeta.placeholder': '例：口*洛',
   'cbeta.hint': '依 <a href="https://cbeta.org/character-composition-rules" target="_blank" rel="noopener">CBETA 組字規則</a> 描述（如 <code>口*洛</code>、<code>木*(於-方)</code>）',
   'cbeta.copy': '複製組字式',
+  'cbetaop.lr': '左右',
+  'cbetaop.tb': '上下',
+  'cbetaop.surround': '包圍',
+  'cbetaop.sub': '減（移除部件）',
+  'cbetaop.add': '加（增添部件）',
+  'cbetaop.group': '群組',
 
   /* 缺字碼 ↔ 對應 Unicode 字 */
   'code.label': '大正藏 / CBETA 缺字碼',
