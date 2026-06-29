@@ -18,6 +18,10 @@ I18n.register('en', {
   'files.matchCount': '{n} / {total} match',
   'files.findPh': 'Find by code / char / IDS / CBETA / filename…',
   'files.findClear': 'Clear search',
+  'quick.title': 'Common chars (click to copy)',
+  'quick.ideoSpace': 'Ideographic space',
+  'quick.ideoZero': 'Ideographic zero',
+  'quick.copied': 'Copied {n}',
   'files.empty': 'No glyph SVGs yet. Drop a <code>.svg</code> here, or click “Upload SVG”.',
 
   'ids.title': 'IDS Builder',

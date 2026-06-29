@@ -182,6 +182,32 @@ main { padding: 8px 0 56px; }
 .find-clear:hover { color: var(--accent); }
 .find-clear i.material-icons { font-size: 16px; line-height: 1; }
 
+/* ===== 常用字快速複製（獨立 chip，點擊複製，不影響選取） ===== */
+.quick-copy { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.quick-label { font-size: .76rem; color: var(--muted); }
+.quick-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.qc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px 3px 4px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.qc-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.qc-btn:active { transform: translateY(0); }
+.qc-btn .qc-char {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 1.4em; height: 1.4em;
+  font-size: 1.1rem; line-height: 1;
+  border: 1px dashed var(--border); border-radius: 4px;
+}
+.qc-btn .qc-cap { font-size: .72rem; color: var(--muted); }
+
 .glyph-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));

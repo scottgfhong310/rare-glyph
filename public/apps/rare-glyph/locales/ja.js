@@ -18,6 +18,10 @@ I18n.register('ja', {
   'files.matchCount': '{n} / {total} 件一致',
   'files.findPh': 'コード / 対応字 / IDS / CBETA / ファイル名で検索…',
   'files.findClear': '検索をクリア',
+  'quick.title': 'よく使う字（クリックでコピー）',
+  'quick.ideoSpace': '全角スペース',
+  'quick.ideoZero': '漢数字ゼロ',
+  'quick.copied': '{n} をコピーしました',
   'files.empty': '欠字 SVG がまだありません。<code>.svg</code> をドロップするか「SVG をアップロード」を押してください。',
 
   'ids.title': 'IDS Builder',

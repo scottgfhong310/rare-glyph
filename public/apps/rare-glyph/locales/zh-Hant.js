@@ -20,6 +20,10 @@ I18n.register('zh-Hant', {
   'files.matchCount': '{n} / {total} 筆符合',
   'files.findPh': '搜尋 缺字碼 / 對應字 / IDS / CBETA / 檔名…',
   'files.findClear': '清除搜尋',
+  'quick.title': '常用字（點擊複製）',
+  'quick.ideoSpace': '全形空格',
+  'quick.ideoZero': '表意數字零',
+  'quick.copied': '已複製 {n}',
   'files.empty': '尚無缺字 SVG。把 <code>.svg</code> 拖進來，或按「上傳 SVG」。',
 
   /* 中：IDS Builder */

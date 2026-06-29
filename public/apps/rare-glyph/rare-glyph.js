@@ -185,6 +185,28 @@
     { op: '+', key: 'cbetaop.add' },       // 加（增添部件）
     { op: '()', key: 'cbetaop.group', back: 1 }  // 群組（游標置於括號內）
   ];
+  /* ---------- 常用字快速複製（獨立；不影響選取） ---------- */
+  var QUICK_CHARS = [
+    { ch: '　', cp: 'U+3000', key: 'quick.ideoSpace' },  // 全形空格
+    { ch: '〇', cp: 'U+3007', key: 'quick.ideoZero' }    // 〇 表意數字零
+  ];
+  function renderQuickCopy() {
+    var box = document.getElementById('quick-copy');
+    box.innerHTML = '';
+    QUICK_CHARS.forEach(function (e) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'qc-btn';
+      b.title = t(e.key) + '（' + e.cp + '）';
+      b.innerHTML = '<span class="qc-char">' + escHtml(e.ch) + '</span>' +
+        '<span class="qc-cap">' + escHtml(t(e.key)) + '</span>';
+      b.addEventListener('click', function () {
+        copyText(e.ch, t('quick.copied', { n: t(e.key) }));   // 純複製，不改 state.current
+      });
+      box.appendChild(b);
+    });
+  }
+
   function renderCbetaPalette() {
     var pal = document.getElementById('cbeta-palette');
     pal.innerHTML = '';
@@ -712,6 +734,7 @@
   function relocalizeDynamic() {
     renderPalette();
     renderCbetaPalette();
+    renderQuickCopy();
     renderGrid();
     refreshDirty();   // 重設存檔鍵 title（I18n.apply 會把 data-i18n-title 蓋回非 dirty 版）
     if (state.current) selectEntry(state.current);
@@ -785,6 +808,7 @@
     window.I18n.apply(document);
     renderPalette();
     renderCbetaPalette();
+    renderQuickCopy();
     bind();
     initDragDrop();
     onIdsInput();          // 初始驗證徽章（空 → neutral）
