@@ -5,8 +5,8 @@ I18n.register('zh-Hant', {
 
   /* 側鍵 */
   'tool.menu': '顯示／隱藏缺字清單',
-  'tool.top': '到頁面最上方',
-  'tool.bottom': '到頁面最下方',
+  'tool.top': '到清單頂端',
+  'tool.bottom': '到清單底端',
   'tool.locate': '回到所選字的位置',
   'tool.mode': '切換 light / dark',
   'tool.lang': '語言',

@@ -93,7 +93,7 @@ body { transition: background .2s ease, color .2s ease; }
 .rg-title { font-size: 1.4rem; font-weight: 700; margin: 0; }
 .rg-subtitle { font-size: .85rem; color: var(--muted); }
 
-main { padding: 8px 0 56px; }
+main { padding: 8px 0 16px; }
 
 /* ===== 三欄版面 ===== */
 .rg-layout {
@@ -255,7 +255,14 @@ main { padding: 8px 0 56px; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
   gap: 10px;
+  max-height: 60vh;       /* 清單在框內捲動，頁面不再變很高（字少時不出現捲軸） */
+  overflow-y: auto;
+  padding-right: 4px;     /* 給捲軸留空，避免蓋住卡片右緣 */
 }
+/* 細捲軸，融入主題 */
+.glyph-grid::-webkit-scrollbar { width: 8px; }
+.glyph-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.glyph-grid::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 .glyph-cell {
   display: flex;
   flex-direction: column;

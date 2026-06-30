@@ -90,9 +90,28 @@
     if (el) el.style.display = show ? 'flex' : 'none';
   }
 
-  /* ---------- 頁面捲動導覽 ---------- */
-  function scrollPageTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  function scrollPageBottom() { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }); }
+  // 依視窗高度調整缺字清單的可視高度：填到視窗底（清單頂端到視窗底 − 底部留白）。
+  // 高螢幕更高、矮螢幕更短；超出才在框內捲。
+  function sizeGrid() {
+    var grid = document.getElementById('glyph-grid');
+    if (!grid) return;
+    var pane = grid.closest ? grid.closest('.rg-pane') : null;
+    var main = document.querySelector('main');
+    // 清單下方仍有的版面留白：pane 底內距 + main 底內距（否則 grid 撐到 vh-x 後再加這些 → 頁面溢出、出捲軸）
+    var panePadB = pane ? (parseFloat(getComputedStyle(pane).paddingBottom) || 0) : 0;
+    var mainPadB = main ? (parseFloat(getComputedStyle(main).paddingBottom) || 0) : 0;
+    var topAbs = grid.getBoundingClientRect().top + window.scrollY;  // 與捲動位置無關的文件絕對 top
+    var h = Math.round(window.innerHeight - topAbs - panePadB - mainPadB - 8);  // 8px 視覺間隙
+    grid.style.maxHeight = Math.max(200, h) + 'px';                  // 下限避免過矮
+  }
+  var sizeGridTimer = null;
+  function sizeGridSoon() { clearTimeout(sizeGridTimer); sizeGridTimer = setTimeout(sizeGrid, 80); }
+
+  /* ---------- 捲動導覽 ---------- */
+  function scrollPageTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }   // 點選字後頁面回頂，供編輯
+  // side-tool 置頂/置底：捲動「缺字清單」框（非整頁）
+  function scrollListTop() { var g = document.getElementById('glyph-grid'); if (g) g.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function scrollListBottom() { var g = document.getElementById('glyph-grid'); if (g) g.scrollTo({ top: g.scrollHeight, behavior: 'smooth' }); }
   function scrollToSelected() {
     if (!state.current) return;
     var c = document.querySelector('.glyph-cell[data-key="' + cssEsc(state.current) + '"]');
@@ -454,6 +473,7 @@
       cell.addEventListener('click', function () { selectEntry(f._key); scrollPageTop(); });
       grid.appendChild(cell);
     });
+    sizeGrid();   // 內容/上方控制列可能改變後，重算清單高度
   }
 
   function onFind() {
@@ -852,8 +872,8 @@
     document.getElementById('setting-menu').addEventListener('click', function () {
       document.getElementById('files-pane').classList.toggle('collapsed'); setIconDone(this);
     });
-    document.getElementById('setting-top').addEventListener('click', scrollPageTop);
-    document.getElementById('setting-bottom').addEventListener('click', scrollPageBottom);
+    document.getElementById('setting-top').addEventListener('click', scrollListTop);
+    document.getElementById('setting-bottom').addEventListener('click', scrollListBottom);
     document.getElementById('setting-locate').addEventListener('click', scrollToSelected);
 
     document.getElementById('ids-input').addEventListener('input', onIdsInput);
@@ -902,6 +922,7 @@
     });
 
     document.addEventListener('i18n:changed', relocalizeDynamic);
+    window.addEventListener('resize', sizeGridSoon);
 
     // 有未存檔變更時，重新整理／關閉分頁前瀏覽器攔截確認
     window.addEventListener('beforeunload', function (e) {
@@ -920,5 +941,6 @@
     initDragDrop();
     onIdsInput();          // 初始驗證徽章（空 → neutral）
     loadFiles();
+    sizeGrid();            // 初始高度（loadFiles 完成後 renderGrid 會再算一次）
   });
 })();

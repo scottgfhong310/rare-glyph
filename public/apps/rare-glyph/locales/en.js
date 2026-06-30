@@ -4,8 +4,8 @@ I18n.register('en', {
   'title.sub': 'IDS Builder · Ideographic Description Sequences',
 
   'tool.menu': 'Show / hide glyph list',
-  'tool.top': 'Scroll to top',
-  'tool.bottom': 'Scroll to bottom',
+  'tool.top': 'List top',
+  'tool.bottom': 'List bottom',
   'tool.locate': 'Back to the selected glyph',
   'tool.mode': 'Toggle light / dark',
   'tool.lang': 'Language',

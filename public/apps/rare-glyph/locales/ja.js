@@ -4,8 +4,8 @@ I18n.register('ja', {
   'title.sub': 'IDS Builder · 漢字構成記述列',
 
   'tool.menu': '文字一覧の表示／非表示',
-  'tool.top': 'ページ最上部へ',
-  'tool.bottom': 'ページ最下部へ',
+  'tool.top': '一覧の先頭へ',
+  'tool.bottom': '一覧の末尾へ',
   'tool.locate': '選択中の字の位置に戻る',
   'tool.mode': 'ライト／ダーク切替',
   'tool.lang': '言語',
