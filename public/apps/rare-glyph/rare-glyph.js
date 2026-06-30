@@ -83,6 +83,20 @@
       if (el) el.style.display = show ? 'flex' : 'none';
     });
   }
+  // 「回到所選字」側鍵只在有選取時顯示
+  function showLocate(show) {
+    var el = document.getElementById('setting-locate');
+    if (el) el.style.display = show ? 'flex' : 'none';
+  }
+
+  /* ---------- 頁面捲動導覽 ---------- */
+  function scrollPageTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  function scrollPageBottom() { window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' }); }
+  function scrollToSelected() {
+    if (!state.current) return;
+    var c = document.querySelector('.glyph-cell[data-key="' + cssEsc(state.current) + '"]');
+    if (c) c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   /* ---------- 條目存取 ---------- */
   function entryByKey(key) {
@@ -379,7 +393,7 @@
         (f._key === state.current ? ' active' : '') + (entryDirty(f._key) ? ' dirty' : '');
       cell.dataset.key = f._key;
       cell.innerHTML = cellInner(f);
-      cell.addEventListener('click', function () { selectEntry(f._key); });
+      cell.addEventListener('click', function () { selectEntry(f._key); scrollPageTop(); });
       grid.appendChild(cell);
     });
   }
@@ -427,6 +441,7 @@
   function renderDetail(entry, meta) {
     document.getElementById('detail-empty').hidden = true;
     document.getElementById('detail-body').hidden = false;
+    showLocate(true);
     var preview = document.querySelector('.detail-preview');
     var dg = document.getElementById('detail-glyph');
     var delLabel = document.querySelector('#detail-delete .del-label');
@@ -501,6 +516,7 @@
     document.getElementById('detail-empty').hidden = false;
     document.getElementById('detail-body').hidden = true;
     showDownload(false);
+    showLocate(false);
   }
 
   /* ---------- 新增無字形登錄 ---------- */
@@ -753,6 +769,9 @@
     document.getElementById('setting-menu').addEventListener('click', function () {
       document.getElementById('files-pane').classList.toggle('collapsed'); setIconDone(this);
     });
+    document.getElementById('setting-top').addEventListener('click', scrollPageTop);
+    document.getElementById('setting-bottom').addEventListener('click', scrollPageBottom);
+    document.getElementById('setting-locate').addEventListener('click', scrollToSelected);
 
     document.getElementById('ids-input').addEventListener('input', onIdsInput);
     document.getElementById('cbeta-input').addEventListener('input', onCbetaInput);

@@ -5,6 +5,9 @@ I18n.register('zh-Hant', {
 
   /* 側鍵 */
   'tool.menu': '顯示／隱藏缺字清單',
+  'tool.top': '到頁面最上方',
+  'tool.bottom': '到頁面最下方',
+  'tool.locate': '回到所選字的位置',
   'tool.mode': '切換 light / dark',
   'tool.lang': '語言',
   'tool.download': '下載目前選中的 SVG',
