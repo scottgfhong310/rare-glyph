@@ -521,6 +521,12 @@
 
   /* ---------- 新增無字形登錄 ---------- */
   function addCodeOnly() {
+    // 先清掉 find 過濾：新建的空白條目不符任何搜尋字串，否則不會出現在清單
+    if (state.filter) {
+      state.filter = '';
+      document.getElementById('glyph-find').value = '';
+      document.getElementById('glyph-find-clear').hidden = true;
+    }
     var key = 'new:' + (++state.seq);
     state.files.unshift({ file: '', hasSvg: false, stem: '', size: 0, birthtime: 0, _key: key });
     state.metaByKey[key] = { ids: '', cbeta: '', code: '', uni: '', timestamp: Lib.timestamp() };
