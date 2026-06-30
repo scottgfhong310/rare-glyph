@@ -21,6 +21,14 @@ I18n.register('ja', {
   'files.matchCount': '{n} / {total} 件一致',
   'files.findPh': 'コード / 対応字 / IDS / CBETA / ファイル名で検索…',
   'files.findClear': '検索をクリア',
+  'review.label': 'レビュー',
+  'review.dirty': '未保存',
+  'review.nocode': 'コード無し',
+  'review.dup': '重複',
+  'review.f.code': 'コード',
+  'review.f.uni': '対応字',
+  'review.f.ids': 'IDS',
+  'review.f.cbeta': '組字式',
   'quick.title': 'よく使う字（クリックでコピー）',
   'quick.ideoSpace': '全角スペース',
   'quick.ideoZero': '漢数字ゼロ',
@@ -49,7 +57,8 @@ I18n.register('ja', {
 
   /* 欠字コード ↔ 対応 Unicode 文字 */
   'code.label': '大正蔵 / CBETA 欠字コード',
-  'code.placeholder': '例：T014461',
+  'code.placeholder': '例：T014461 / 20260629-001',
+  'code.regen': '既定コード yyyyMMdd-### を入れる（当日の次番）',
   'uni.label': '対応する Unicode 文字',
   'uni.placeholder': '例：𢤱',
 
@@ -62,7 +71,7 @@ I18n.register('ja', {
   'detail.removeEntry': '登録を削除',
   'detail.codeOnlyType': '字形なし登録（既に Unicode にある）',
   'toast.addedCodeOnly': '字形なし登録を追加しました（欠字コードを入力して保存）',
-  'toast.needCode': '字形なし登録には「欠字コード」が必要です',
+  'toast.needCode': '字形なし登録に欠字コードがありません——絞り込み表示しました。入力してから保存してください',
   'toast.removed': '登録を削除しました',
   'toast.charCopied': '対応字をコピーしました',
   'confirm.removeEntry': '登録「{n}」を削除しますか？\n（保存すると glyphs.js に書き戻し）',

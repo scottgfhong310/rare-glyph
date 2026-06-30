@@ -106,6 +106,12 @@
             <i class="material-icons">close</i>
           </button>
         </div>
+        <div class="review-filters">
+          <span class="quick-label"><i class="material-icons">filter_list</i><span data-i18n="review.label">檢視</span></span>
+          <button class="rev-chip" id="rev-dirty" data-mode="dirty" data-i18n="review.dirty">未存檔變更</button>
+          <button class="rev-chip" id="rev-nocode" data-mode="nocode" data-i18n="review.nocode">缺缺字碼</button>
+          <button class="rev-chip" id="rev-dup" data-mode="dup" data-i18n="review.dup">重複</button>
+        </div>
         <div class="quick-copy">
           <span class="quick-label" data-i18n="quick.title">常用字（點擊複製）</span>
           <div class="quick-row" id="quick-copy"></div>
@@ -169,6 +175,9 @@
       <section class="rg-pane rg-detail">
         <div class="pane-head">
           <span class="pane-title"><i class="material-icons">description</i><span data-i18n="detail.title">缺字詳情</span></span>
+          <button class="btn-flat rg-head-btn" id="add-codeonly-detail" data-i18n-title="files.addCodeOnly" title="新增無字形登錄">
+            <i class="material-icons left">add</i><span data-i18n="files.addCodeOnly">新增無字形</span>
+          </button>
         </div>
 
         <div class="detail-empty" id="detail-empty">
@@ -195,10 +204,13 @@
 
           <!-- 缺字碼 ↔ 對應 Unicode 字 -->
           <div class="detail-codeuni">
-            <div class="input-field">
+            <div class="input-field code-field">
               <input type="text" id="code-input" spellcheck="false"
-                     data-i18n-placeholder="code.placeholder" placeholder="例：T014461">
+                     data-i18n-placeholder="code.placeholder" placeholder="例：T014461 或 20260629-001">
               <label for="code-input" data-i18n="code.label">大正藏 / CBETA 缺字碼</label>
+              <button type="button" class="field-icon-btn" id="code-regen" data-i18n-title="code.regen" title="套用預設碼 yyyyMMdd-###">
+                <i class="material-icons">autorenew</i>
+              </button>
             </div>
             <div class="input-field">
               <input type="text" id="uni-input" spellcheck="false" maxlength="8"

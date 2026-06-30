@@ -182,6 +182,26 @@ main { padding: 8px 0 56px; }
 .find-clear:hover { color: var(--accent); }
 .find-clear i.material-icons { font-size: 16px; line-height: 1; }
 
+/* ===== 檢視篩選 chip（未存檔 / 缺缺字碼；與 find 並用） ===== */
+.review-filters { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.review-filters .quick-label { display: inline-flex; align-items: center; gap: 3px; }
+.review-filters .quick-label .material-icons { font-size: 16px; }
+.rev-chip {
+  font-size: .74rem;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.rev-chip:hover { border-color: var(--accent); color: var(--text); }
+.rev-chip.active { color: var(--accent); border-color: var(--accent); background: var(--surface-2); }
+
+/* 詳情 pane 頭的「新增無字形」鈕靠右 */
+.rg-detail .pane-head .rg-head-btn { margin-left: auto; }
+
 /* ===== 常用字快速複製（獨立 chip，點擊複製，不影響選取） ===== */
 .quick-copy { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .quick-label { font-size: .76rem; color: var(--muted); }
@@ -213,8 +233,15 @@ main { padding: 8px 0 56px; }
  * 深色模式下這些按鈕文字一律 #fff，避免任何底色上低對比。 */
 .idc-btn:hover, .idc-btn:focus, .idc-btn:active,
 .qc-btn:hover, .qc-btn:focus, .qc-btn:active,
-.uni-copy-btn:hover, .uni-copy-btn:focus, .uni-copy-btn:active {
+.uni-copy-btn:hover, .uni-copy-btn:focus, .uni-copy-btn:active,
+.rev-chip:hover, .rev-chip:focus, .rev-chip:active {
   background-color: var(--surface);
+}
+/* 啟用中的檢視 chip 不被上面中和蓋掉（保留 surface-2 + accent）；切換過程也不再閃 teal */
+.rev-chip.active, .rev-chip.active:hover, .rev-chip.active:focus, .rev-chip.active:active {
+  background-color: var(--surface-2);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 .find-clear:hover, .find-clear:focus, .find-clear:active { background-color: transparent; }
 [data-theme="dark"] .idc-btn,
@@ -276,6 +303,9 @@ main { padding: 8px 0 56px; }
 .glyph-cell.codeonly .cell-char { font-size: 40px; line-height: 1; color: var(--text); }
 .glyph-cell.codeonly .cell-char-empty { color: var(--muted); opacity: .5; }
 .glyph-cell .cell-tag { font-size: .58rem; color: var(--muted); border: 1px solid var(--border); border-radius: 6px; padding: 0 5px; }
+/* 重複檢視：標示撞到的欄位 + 整格警示外框 */
+.glyph-cell .cell-dup { font-size: .58rem; color: #ff9800; border: 1px solid #ff9800; border-radius: 6px; padding: 0 5px; }
+.glyph-cell.dupe { border-color: #ff9800; }
 
 .pane-empty, .detail-empty {
   display: flex;
@@ -399,6 +429,20 @@ main { padding: 8px 0 56px; }
 .detail-codeuni { display: block; }
 .detail-codeuni .input-field label { white-space: nowrap; }
 .detail-codeuni input[type="text"] { color: var(--text); }
+
+/* code 欄的「重產預設碼」icon（input-field 內右側） */
+.code-field { position: relative; }
+.code-field #code-input { padding-right: 30px; }
+.field-icon-btn {
+  position: absolute; right: 0; bottom: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0;
+  border: 0; border-radius: 6px;
+  background: transparent; color: var(--muted); cursor: pointer;
+  transition: color .15s;
+}
+.field-icon-btn:hover, .field-icon-btn:focus, .field-icon-btn:active { color: var(--accent); background: transparent; }
+.field-icon-btn i.material-icons { font-size: 18px; line-height: 1; }
 .cell-uni { font-size: .8rem; line-height: 1; color: var(--accent); }
 .detail-meta { min-width: 0; }
 .detail-code { font-size: 1rem; font-weight: 600; word-break: break-all; }

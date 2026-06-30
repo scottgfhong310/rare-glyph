@@ -22,6 +22,7 @@
     current: null,      // 目前選中的 _key
     seq: 0,             // 未存檔無字形登錄的臨時 key 序號
     filter: '',         // find 搜尋字串（小寫；跨 file/code/uni/ids/cbeta 比對）
+    reviewFilter: '',   // 檢視篩選：'' | 'dirty'（更改＋新增）| 'nocode'（無字形登錄缺缺字碼）
     savedByKey: {}      // 已存檔基準（key → 持久化快照）；與 metaByKey 比對得 dirty
   };
 
@@ -317,6 +318,14 @@
     syncTextareas();
   }
 
+  // 「重產」：把 code 欄填成預設 yyyyMMdd-###（當天下一號，排除本筆自身）
+  function regenCode() {
+    if (!state.current) return;
+    var c = Lib.suggestCode(allCodes(state.current));
+    document.getElementById('code-input').value = c;
+    onCodeInput();
+  }
+
   function onCodeInput() {
     if (!state.current) return;
     metaOf(state.current).code = document.getElementById('code-input').value.trim();
@@ -342,6 +351,14 @@
       (title ? ' title="' + title + '"' : '') + '>' + escHtml(desc) + '</span>';
   }
 
+  // 重複檢視時，格上標示「哪個欄位撞了」
+  function dupTag(f) {
+    if (state.reviewFilter !== 'dup' || !state._dupInfo) return '';
+    var fl = state._dupInfo.fieldOf[f._key];
+    if (!fl) return '';
+    return '<span class="cell-dup">⚠ ' + escHtml(t('review.f.' + fl)) + '</span>';
+  }
+
   function cellInner(f) {
     var meta = metaOf(f._key);
     if (f.file) {
@@ -351,7 +368,7 @@
           '\')" role="img" aria-label="' + escHtml('缺字 ' + stem) + '"></span>' +
         (uni ? '<span class="cell-uni" title="對應 Unicode 字">' + escHtml(uni) + '</span>' : '') +
         descBadge(meta) +
-        '<span class="cell-name">' + escHtml(stem) + '</span>';
+        '<span class="cell-name">' + escHtml(stem) + '</span>' + dupTag(f);
     }
     // 無字形登錄
     var u = meta.uni || '';
@@ -360,12 +377,45 @@
         : '<span class="cell-char cell-char-empty">？</span>') +
       descBadge(meta) +
       '<span class="cell-name">' + escHtml(meta.code || t('files.unnamed')) + '</span>' +
-      '<span class="cell-tag">' + escHtml(t('files.codeOnlyTag')) + '</span>';
+      '<span class="cell-tag">' + escHtml(t('files.codeOnlyTag')) + '</span>' + dupTag(f);
+  }
+
+  // 重複偵測：掃描所有條目的 code/uni/ids/cbeta（非空），任一值出現 ≥2 次即標為重複。
+  // 回傳 { dupKeys, fieldOf, groupOf }：groupOf 供把撞同值者排在一起。
+  function computeDups() {
+    var fields = ['code', 'uni', 'ids', 'cbeta'];
+    var byVal = { code: {}, uni: {}, ids: {}, cbeta: {} };
+    state.files.forEach(function (f) {
+      var m = metaOf(f._key);
+      fields.forEach(function (fl) {
+        var v = (m[fl] || '').trim();
+        if (!v) return;
+        (byVal[fl][v] = byVal[fl][v] || []).push(f._key);
+      });
+    });
+    var dupKeys = {}, fieldOf = {}, groupOf = {};
+    fields.forEach(function (fl) {
+      Object.keys(byVal[fl]).forEach(function (v) {
+        var keys = byVal[fl][v];
+        if (keys.length < 2) return;
+        keys.forEach(function (k) {
+          dupKeys[k] = true;
+          if (!groupOf[k]) { groupOf[k] = fl + ' ' + v; fieldOf[k] = fl; }  // 首個撞到的欄位
+        });
+      });
+    });
+    return { dupKeys: dupKeys, fieldOf: fieldOf, groupOf: groupOf };
   }
 
   // find：跨 file / code(檔名) / code(缺字碼) / uni / ids / cbeta 的不分欄位子字串比對
   function matchEntry(f) {
+    // 檢視篩選（predicate）：更改＋新增 / 無字形登錄缺缺字碼 / 重複
+    if (state.reviewFilter === 'dirty' && !entryDirty(f._key)) return false;
+    if (state.reviewFilter === 'nocode' && !(!f.file && !(metaOf(f._key).code || '').trim())) return false;
+    if (state.reviewFilter === 'dup' && !(state._dupInfo && state._dupInfo.dupKeys[f._key])) return false;
+    // 文字 find
     if (!state.filter) return true;
+    if (String(f._key).indexOf('new:') === 0) return true;  // 未存檔新條目一律顯示（不被文字過濾掉）
     var m = metaOf(f._key);
     var hay = [f.file || '', Lib.codeFromFile(f.file || ''), m.code, m.uni, m.ids, m.cbeta]
       .join('\n').toLowerCase();
@@ -383,14 +433,22 @@
       return;
     }
     empty.hidden = true;
+    state._dupInfo = (state.reviewFilter === 'dup') ? computeDups() : null;
     var shown = state.files.filter(matchEntry);
-    meta.textContent = state.filter
+    // 重複檢視：把撞同一值的排在一起（依 groupOf），方便對照
+    if (state._dupInfo) {
+      shown = shown.slice().sort(function (a, b) {
+        return (state._dupInfo.groupOf[a._key] || '').localeCompare(state._dupInfo.groupOf[b._key] || '');
+      });
+    }
+    meta.textContent = (state.filter || state.reviewFilter)
       ? t('files.matchCount', { n: shown.length, total: state.files.length })
       : t('files.count', { n: state.files.length });
     shown.forEach(function (f) {
       var cell = document.createElement('div');
       cell.className = 'glyph-cell' + (f.file ? '' : ' codeonly') +
-        (f._key === state.current ? ' active' : '') + (entryDirty(f._key) ? ' dirty' : '');
+        (f._key === state.current ? ' active' : '') + (entryDirty(f._key) ? ' dirty' : '') +
+        ((state._dupInfo && state._dupInfo.dupKeys[f._key]) ? ' dupe' : '');
       cell.dataset.key = f._key;
       cell.innerHTML = cellInner(f);
       cell.addEventListener('click', function () { selectEntry(f._key); scrollPageTop(); });
@@ -403,6 +461,19 @@
     state.filter = inp.value.trim().toLowerCase();
     document.getElementById('glyph-find-clear').hidden = !inp.value;
     renderGrid();
+  }
+
+  // 檢視篩選：設定（非切換）模式 + 更新 chip 高亮 + 重繪
+  function applyReviewFilter(mode) {
+    state.reviewFilter = mode || '';
+    document.querySelectorAll('.rev-chip').forEach(function (c) {
+      c.classList.toggle('active', c.dataset.mode === state.reviewFilter);
+    });
+    renderGrid();
+  }
+  // 點 chip：toggle（再點同一顆＝關閉）
+  function toggleReviewFilter(mode) {
+    applyReviewFilter(state.reviewFilter === mode ? '' : mode);
   }
 
   // 重繪單一格（編輯 ids/uni/code 時即時反映）
@@ -520,16 +591,18 @@
   }
 
   /* ---------- 新增無字形登錄 ---------- */
+  // 蒐集目前所有條目的 code（可排除某個 key）
+  function allCodes(exceptKey) {
+    return state.files
+      .filter(function (f) { return f._key !== exceptKey; })
+      .map(function (f) { return metaOf(f._key).code; });
+  }
+
   function addCodeOnly() {
-    // 先清掉 find 過濾：新建的空白條目不符任何搜尋字串，否則不會出現在清單
-    if (state.filter) {
-      state.filter = '';
-      document.getElementById('glyph-find').value = '';
-      document.getElementById('glyph-find-clear').hidden = true;
-    }
+    var nextCode = Lib.suggestCode(allCodes());   // 預設帶 yyyyMMdd-###（當天下一號），可改寫
     var key = 'new:' + (++state.seq);
     state.files.unshift({ file: '', hasSvg: false, stem: '', size: 0, birthtime: 0, _key: key });
-    state.metaByKey[key] = { ids: '', cbeta: '', code: '', uni: '', timestamp: Lib.timestamp() };
+    state.metaByKey[key] = { ids: '', cbeta: '', code: nextCode, uni: '', timestamp: Lib.timestamp() };
     renderGrid();
     selectEntry(key);
     document.getElementById('code-input').focus();
@@ -646,9 +719,13 @@
 
   function saveRegistry(el) {
     var entries = collectEntries();
-    // 無字形登錄必須有 code
+    // 無字形登錄必須有 code；漏填時自動套用「缺缺字碼」檢視篩選，直接列出問題條目
     for (var i = 0; i < entries.length; i++) {
-      if (!entries[i].file && !entries[i].code) { toast(t('toast.needCode'), 'orange'); return; }
+      if (!entries[i].file && !entries[i].code) {
+        applyReviewFilter('nocode');
+        toast(t('toast.needCode'), 'orange');
+        return;
+      }
     }
     showLoading();
     Lib.saveRegistry(entries).then(function (r) {
@@ -782,6 +859,7 @@
     document.getElementById('ids-input').addEventListener('input', onIdsInput);
     document.getElementById('cbeta-input').addEventListener('input', onCbetaInput);
     document.getElementById('code-input').addEventListener('input', onCodeInput);
+    document.getElementById('code-regen').addEventListener('click', regenCode);
     document.getElementById('uni-input').addEventListener('input', onUniInput);
 
     document.getElementById('ids-copy').addEventListener('click', function () {
@@ -811,6 +889,10 @@
     });
 
     document.getElementById('add-codeonly').addEventListener('click', addCodeOnly);
+    document.getElementById('add-codeonly-detail').addEventListener('click', addCodeOnly);
+    document.getElementById('rev-dirty').addEventListener('click', function () { toggleReviewFilter('dirty'); });
+    document.getElementById('rev-nocode').addEventListener('click', function () { toggleReviewFilter('nocode'); });
+    document.getElementById('rev-dup').addEventListener('click', function () { toggleReviewFilter('dup'); });
     document.getElementById('upload-btn').addEventListener('click', function () {
       document.getElementById('file-input').click();
     });

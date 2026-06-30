@@ -229,6 +229,22 @@
   }
 
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function pad3(n) { return ('00' + n).slice(-3); }
+
+  // 預設缺字碼 yyyyMMdd-###：### 在「當天」內連續（掃描現有 code 中符合 <當天>-### 的最大號 +1）。
+  // 自訂碼（如 T014461）不符此格式，不影響流水號。
+  function suggestCode(codes, date) {
+    var d = date || new Date();
+    var ymd = '' + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+    var re = new RegExp('^' + ymd + '-(\\d+)$');
+    var max = 0;
+    (codes || []).forEach(function (c) {
+      var m = re.exec(String(c == null ? '' : c).trim());
+      if (m) { var n = parseInt(m[1], 10); if (isFinite(n) && n > max) max = n; }
+    });
+    return ymd + '-' + pad3(max + 1);
+  }
+
   function timestamp(date) {
     var d = date || new Date();
     return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) +
@@ -247,6 +263,7 @@
     downloadUrl: downloadUrl,
     buildSpan: buildSpan,
     buildCharSpan: buildCharSpan,
+    suggestCode: suggestCode,
     isUploadableSvg: isUploadableSvg,
     listFiles: listFiles,
     uploadFiles: uploadFiles,

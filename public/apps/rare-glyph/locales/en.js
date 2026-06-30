@@ -21,6 +21,14 @@ I18n.register('en', {
   'files.matchCount': '{n} / {total} match',
   'files.findPh': 'Find by code / char / IDS / CBETA / filename…',
   'files.findClear': 'Clear search',
+  'review.label': 'Review',
+  'review.dirty': 'Unsaved',
+  'review.nocode': 'Missing code',
+  'review.dup': 'Duplicates',
+  'review.f.code': 'code',
+  'review.f.uni': 'char',
+  'review.f.ids': 'IDS',
+  'review.f.cbeta': 'CBETA',
   'quick.title': 'Common chars (click to copy)',
   'quick.ideoSpace': 'Ideographic space',
   'quick.ideoZero': 'Ideographic zero',
@@ -49,7 +57,8 @@ I18n.register('en', {
 
   /* glyph code ↔ corresponding Unicode char */
   'code.label': 'Taishō / CBETA glyph code',
-  'code.placeholder': 'e.g. T014461',
+  'code.placeholder': 'e.g. T014461 or 20260629-001',
+  'code.regen': 'Fill default code yyyyMMdd-### (next today)',
   'uni.label': 'Corresponding Unicode char',
   'uni.placeholder': 'e.g. 𢤱',
 
@@ -62,7 +71,7 @@ I18n.register('en', {
   'detail.removeEntry': 'Remove entry',
   'detail.codeOnlyType': 'Code-only entry (already in Unicode)',
   'toast.addedCodeOnly': 'Added a code-only entry (fill in the code, then save)',
-  'toast.needCode': 'A code-only entry needs a glyph code',
+  'toast.needCode': 'A code-only entry is missing its code — filtered for you; fill it in, then save',
   'toast.removed': 'Entry removed',
   'toast.charCopied': 'Character copied',
   'confirm.removeEntry': 'Remove entry “{n}”?\n(Written back to glyphs.js on save.)',

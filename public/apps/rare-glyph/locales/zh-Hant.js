@@ -23,6 +23,14 @@ I18n.register('zh-Hant', {
   'files.matchCount': '{n} / {total} 筆符合',
   'files.findPh': '搜尋 缺字碼 / 對應字 / IDS / CBETA / 檔名…',
   'files.findClear': '清除搜尋',
+  'review.label': '檢視',
+  'review.dirty': '未存檔變更',
+  'review.nocode': '缺缺字碼',
+  'review.dup': '重複',
+  'review.f.code': '缺字碼',
+  'review.f.uni': '對應字',
+  'review.f.ids': 'IDS',
+  'review.f.cbeta': '組字式',
   'quick.title': '常用字（點擊複製）',
   'quick.ideoSpace': '全形空格',
   'quick.ideoZero': '表意數字零',
@@ -52,7 +60,8 @@ I18n.register('zh-Hant', {
 
   /* 缺字碼 ↔ 對應 Unicode 字 */
   'code.label': '大正藏 / CBETA 缺字碼',
-  'code.placeholder': '例：T014461',
+  'code.placeholder': '例：T014461 或 20260629-001',
+  'code.regen': '套用預設碼 yyyyMMdd-###（當天下一號）',
   'uni.label': '對應 Unicode 字',
   'uni.placeholder': '例：𢤱',
 
@@ -65,7 +74,7 @@ I18n.register('zh-Hant', {
   'detail.removeEntry': '移除登錄',
   'detail.codeOnlyType': '無字形登錄（已有對應 Unicode 字）',
   'toast.addedCodeOnly': '已新增無字形登錄（填入缺字碼後存檔）',
-  'toast.needCode': '無字形登錄需填「缺字碼」',
+  'toast.needCode': '無字形登錄缺「缺字碼」——已為你篩選出來，填好再存檔',
   'toast.removed': '已移除登錄',
   'toast.charCopied': '已複製對應字',
   'confirm.removeEntry': '移除登錄「{n}」？\n（按存檔才寫回 glyphs.js）',
