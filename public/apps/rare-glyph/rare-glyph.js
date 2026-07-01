@@ -625,7 +625,8 @@
     state.metaByKey[key] = { ids: '', cbeta: '', code: nextCode, uni: '', timestamp: Lib.timestamp() };
     renderGrid();
     selectEntry(key);
-    document.getElementById('code-input').focus();
+    scrollToSelected();                                        // Glyphs 清單捲到新條目位置
+    document.getElementById('code-input').focus({ preventScroll: true });  // 聚焦 code 欄但不搶著捲頁
     toast(t('toast.addedCodeOnly'), 'grey');
   }
 
