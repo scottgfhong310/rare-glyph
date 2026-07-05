@@ -823,11 +823,8 @@
 
   /* ---------- 語言 ---------- */
   function cycleLang() {
-    var langs = window.I18n.langs;
-    var idx = langs.indexOf(window.I18n.lang);
-    var next = langs[(idx + 1) % langs.length];
-    window.I18n.set(next);
-    toast(window.I18n.name(next), 'grey');
+    var next = window.I18n.cycle();
+    toast(window.I18n.t('toast.lang', { name: window.I18n.name(next) }), 'teal');
   }
 
   /* ---------- 拖拉上傳 ---------- */

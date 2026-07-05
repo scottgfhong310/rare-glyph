@@ -9,6 +9,7 @@ I18n.register('ja', {
   'tool.locate': '選択中の字の位置に戻る',
   'tool.mode': 'ライト／ダーク切替',
   'tool.lang': '言語',
+  'toast.lang': '{name} に切り替えました',
   'tool.download': '選択中の SVG をダウンロード',
   'tool.downloadPng': 'PNG をダウンロード（白地に黒字）',
   'tool.save': '登録を保存（glyphs.js に書き戻し）',

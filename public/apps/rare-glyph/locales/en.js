@@ -9,6 +9,7 @@ I18n.register('en', {
   'tool.locate': 'Back to the selected glyph',
   'tool.mode': 'Toggle light / dark',
   'tool.lang': 'Language',
+  'toast.lang': 'Switched to {name}',
   'tool.download': 'Download the selected SVG',
   'tool.downloadPng': 'Download PNG (black on white)',
   'tool.save': 'Save registry (write back glyphs.js)',

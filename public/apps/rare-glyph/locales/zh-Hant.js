@@ -10,6 +10,7 @@ I18n.register('zh-Hant', {
   'tool.locate': '回到所選字的位置',
   'tool.mode': '切換 light / dark',
   'tool.lang': '語言',
+  'toast.lang': '已切換為 {name}',
   'tool.download': '下載目前選中的 SVG',
   'tool.downloadPng': '下載 PNG（白底黑字）',
   'tool.save': '存檔登錄（寫回 glyphs.js）',
