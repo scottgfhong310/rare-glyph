@@ -479,7 +479,6 @@
   function onFind() {
     var inp = document.getElementById('glyph-find');
     state.filter = inp.value.trim().toLowerCase();
-    document.getElementById('glyph-find-clear').hidden = !inp.value;
     renderGrid();
   }
 
@@ -901,10 +900,6 @@
     document.getElementById('detail-delete').addEventListener('click', deleteCurrent);
 
     document.getElementById('glyph-find').addEventListener('input', onFind);
-    document.getElementById('glyph-find-clear').addEventListener('click', function () {
-      var inp = document.getElementById('glyph-find');
-      inp.value = ''; onFind(); inp.focus();
-    });
 
     document.getElementById('add-codeonly').addEventListener('click', addCodeOnly);
     document.getElementById('add-codeonly-detail').addEventListener('click', addCodeOnly);

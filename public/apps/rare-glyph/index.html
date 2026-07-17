@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="rare-glyph.css">
   <link rel="stylesheet" href="side-tool.css">
   <link rel="stylesheet" href="thinking-dot.css">
+  <link rel="stylesheet" href="filter-clear.css"><!-- 共用 utility：搜尋框「清除」× 鈕（家族 §5.12） -->
 
   <!-- i18n 引擎 → 各語言檔 → 核心 lib（同步載入） -->
   <script src="i18n.js"></script>
@@ -41,6 +42,7 @@
   <script src="glyphs.js"></script>
 
   <!-- 控制器最後執行（DOM 與依賴皆就緒） -->
+  <script defer src="filter-clear.js"></script><!-- 共用 utility：搜尋框清除鈕 -->
   <script defer src="rare-glyph.js"></script>
 </head>
 
@@ -101,10 +103,7 @@
         <div class="glyph-find">
           <i class="material-icons">search</i>
           <input type="text" id="glyph-find" class="browser-default" spellcheck="false" autocomplete="off"
-                 data-i18n-placeholder="files.findPh" placeholder="搜尋 缺字碼 / 對應字 / IDS / CBETA / 檔名…">
-          <button class="find-clear" id="glyph-find-clear" hidden data-i18n-title="files.findClear" title="清除搜尋">
-            <i class="material-icons">close</i>
-          </button>
+                 data-i18n-placeholder="files.findPh" placeholder="搜尋 缺字碼 / 對應字 / IDS / CBETA / 檔名…" data-filter-clear>
         </div>
         <div class="review-filters">
           <span class="quick-label"><i class="material-icons">filter_list</i><span data-i18n="review.label">檢視</span></span>

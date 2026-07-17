@@ -166,21 +166,10 @@ main { padding: 8px 0 16px; }
   padding: 5px 0;
 }
 .glyph-find input.browser-default::placeholder { color: var(--muted); opacity: .8; }
-.find-clear {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px; height: 22px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-}
-.find-clear:hover { color: var(--accent); }
-.find-clear i.material-icons { font-size: 16px; line-height: 1; }
+/* filter-clear utility（家族 §5.12）：清除鈕就地把 input 包一層 .filter-clear-wrap。
+   在此 flex 容器內讓 wrap 接手原本 input 的伸縮，input 再填滿 wrap（原本靠 flex:1，包一層後改 width:100%）。 */
+.glyph-find .filter-clear-wrap { flex: 1 1 auto; min-width: 0; }
+.glyph-find .filter-clear-wrap > input { width: 100%; box-sizing: border-box; }
 
 /* ===== 檢視篩選 chip（未存檔 / 缺缺字碼；與 find 並用） ===== */
 .review-filters { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -243,7 +232,6 @@ main { padding: 8px 0 16px; }
   color: var(--accent);
   border-color: var(--accent);
 }
-.find-clear:hover, .find-clear:focus, .find-clear:active { background-color: transparent; }
 [data-theme="dark"] .idc-btn,
 [data-theme="dark"] .idc-btn .idc-op,
 [data-theme="dark"] .idc-btn .idc-arity,
