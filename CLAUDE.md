@@ -18,7 +18,7 @@ public/apps/rare-glyph/             # 前端（服務於 /apps/rare-glyph/）
 ├─ glyphs.js                        # 登錄（window.RG_GLYPHS = [{file, ids, cbeta, code, uni, timestamp}]；<script> 載入免 fetch）
 ├─ i18n.js · locales/{zh-Hant,en,ja}.js
 ├─ side-tool.css                    # §5.5〔正統〕.side-tools flex 容器版
-├─ thinking-dot.css                 # 家族共用載入點 utility（與 markdown-library 同步）
+├─ thinking-dot.css                 # 家族共用載入點 utility（權威版＝獨立 repo thinking-dot；byte-identical 同步）
 ├─ filter-clear.css · filter-clear.js  # §5.12 篩選框「清除」× 鈕 utility（自 local-reader 複製、byte-identical）
 ├─ materialize-dark.css             # 家族共用 Materialize 深色
 public/lib/Typeface/svgs/           # 缺字 SVG 語料（家族共用 Typeface 路徑）；repo 只附少量 sample
