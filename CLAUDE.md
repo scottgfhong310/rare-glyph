@@ -17,7 +17,7 @@ public/apps/rare-glyph/             # 前端（服務於 /apps/rare-glyph/）
 ├─ index.html · rare-glyph.css · rare-glyph.js · rare-glyph-lib.js   # 四件式
 ├─ glyphs.js                        # 登錄（window.RG_GLYPHS = [{file, ids, cbeta, code, uni, timestamp}]；<script> 載入免 fetch）
 ├─ i18n.js · locales/{zh-Hant,en,ja}.js
-├─ side-tool.css                    # §5.5〔正統〕.side-tools flex 容器版
+├─ side-tool.css · side-tool.js                    # §5.5〔正統〕.side-tools flex 容器版
 ├─ thinking-dot.css                 # 家族共用載入點 utility（權威版＝獨立 repo thinking-dot；byte-identical 同步；載入點預設 2026-07-19 隨權威統一 14px→27px/2.1s）
 ├─ filter-clear.css · filter-clear.js  # §5.12 篩選框「清除」× 鈕 utility（自 local-reader 複製、byte-identical）
 ├─ materialize-dark.css             # 家族共用 Materialize 深色
