@@ -419,7 +419,7 @@
         if (keys.length < 2) return;
         keys.forEach(function (k) {
           dupKeys[k] = true;
-          if (!groupOf[k]) { groupOf[k] = fl + ' ' + v; fieldOf[k] = fl; }  // 首個撞到的欄位
+          if (!groupOf[k]) { groupOf[k] = fl + '\u0000' + v; fieldOf[k] = fl; }  // 首個撞到的欄位
         });
       });
     });

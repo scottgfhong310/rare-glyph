@@ -118,7 +118,7 @@ I18n.register('zh-Hant', {
   'loading': '載入中…',
 
   /* Toast / confirm */
-  'toast.listFail': '讀取清單失敗：{e}',
+  'toast.listFail': '讀取檔案清單失敗：{e}',
   'toast.notSvg': '請選 .svg 檔',
   'toast.uploaded': '已上傳 {n} 個 SVG',
   'toast.uploadFail': '上傳失敗：{e}',

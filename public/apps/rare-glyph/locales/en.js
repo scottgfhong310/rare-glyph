@@ -110,7 +110,7 @@ I18n.register('en', {
   'drop.hint': 'Drop to upload SVG to /lib/Typeface/svgs/',
   'loading': 'Loading…',
 
-  'toast.listFail': 'Failed to load list: {e}',
+  'toast.listFail': 'Failed to load file list: {e}',
   'toast.notSvg': 'Please choose .svg file(s)',
   'toast.uploaded': 'Uploaded {n} SVG(s)',
   'toast.uploadFail': 'Upload failed: {e}',

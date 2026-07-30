@@ -7,7 +7,7 @@ I18n.register('ja', {
   'tool.top': '一覧の先頭へ',
   'tool.bottom': '一覧の末尾へ',
   'tool.locate': '選択中の字の位置に戻る',
-  'tool.mode': 'ライト／ダーク切替',
+  'tool.mode': 'ライト / ダーク切替',
   'tool.lang': '言語',
   'tool.clearFilter': 'クリア',
   'toast.lang': '{name} に切り替えました',
@@ -110,7 +110,7 @@ I18n.register('ja', {
   'drop.hint': 'ドロップして SVG を /lib/Typeface/svgs/ にアップロード',
   'loading': '読み込み中…',
 
-  'toast.listFail': '一覧の取得に失敗：{e}',
+  'toast.listFail': 'ファイル一覧の取得に失敗：{e}',
   'toast.notSvg': '.svg ファイルを選んでください',
   'toast.uploaded': '{n} 個の SVG をアップロードしました',
   'toast.uploadFail': 'アップロード失敗：{e}',
