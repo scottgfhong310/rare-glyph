@@ -9,6 +9,7 @@ I18n.register('en', {
   'tool.locate': 'Back to the selected glyph',
   'tool.mode': 'Toggle light / dark',
   'tool.lang': 'Language',
+  'tool.more': 'More tools',
   'tool.clearFilter': 'Clear',
   'toast.lang': 'Switched to {name}',
   'tool.download': 'Download the selected SVG',

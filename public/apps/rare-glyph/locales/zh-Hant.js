@@ -10,6 +10,7 @@ I18n.register('zh-Hant', {
   'tool.locate': '回到所選字的位置',
   'tool.mode': '切換 light / dark',
   'tool.lang': '語言',
+  'tool.more': '更多工具',
   'tool.clearFilter': '清除',
   'toast.lang': '已切換為 {name}',
   'tool.download': '下載目前選中的 SVG',

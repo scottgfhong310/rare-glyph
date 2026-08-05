@@ -9,6 +9,7 @@ I18n.register('ja', {
   'tool.locate': '選択中の字の位置に戻る',
   'tool.mode': 'ライト / ダーク切替',
   'tool.lang': '言語',
+  'tool.more': 'その他のツール',
   'tool.clearFilter': 'クリア',
   'toast.lang': '{name} に切り替えました',
   'tool.download': '選択中の SVG をダウンロード',
