@@ -8,6 +8,9 @@
  *
  * 依賴：無（原生）。需搭配 filter-clear.css。i18n：鈕 title 掛 data-i18n-title="tool.clearFilter"，
  * 由各 app 的 I18n.apply 在其後翻譯／語言切換時自動更新；未載 i18n 時退回中文 title。
+ * ⚠️ aria-label **沒有對應的 data-i18n-* 屬性**，I18n.apply 碰不到它 ⇒ 只設一次的話它會停在
+ *    掛上去那一刻的語言（實測：切到 en／ja 後 title 換了、aria-label 還是「清除」）。
+ *    故另外聽引擎的公開事件 'i18n:changed'（I18n.set 會派發）把它補同步。
  *
  * 用法：輸入框加 data-filter-clear；本檔於 DOMContentLoaded 自動掃描掛載，或手動 FilterClear.attach(input)。
  * 載入順序：置於該 app 的控制器（會呼叫 I18n.apply）之前，鈕才會被一併翻譯。
@@ -69,6 +72,12 @@
       sync(wrap, input);
       input.focus();
     }
+
+    // 語言切換時把 aria-label 補同步（title 由 I18n.apply 依 data-i18n-title 自己更新）。
+    // ⚠️ 只在這裡設 aria-label，不重設 title——同一個值有兩個寫入點，遲早會各自漂。
+    document.addEventListener('i18n:changed', function () {
+      btn.setAttribute('aria-label', label());
+    });
 
     btn.addEventListener('click', clear);
     input.addEventListener('input', function () { sync(wrap, input); });
