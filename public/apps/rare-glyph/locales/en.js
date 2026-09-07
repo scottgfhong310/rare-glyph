@@ -116,7 +116,7 @@ I18n.register('en', {
   'toast.uploaded': 'Uploaded {n} SVG(s)',
   'toast.uploadFail': 'Upload failed: {e}',
   'toast.saved': 'Saved {n} IDS entries → glyphs.js',
-  'toast.saveFail': 'Save failed: {e}',
+  'toast.saveFail': 'Save failed: {m}',
   'toast.deleted': 'Deleted: {n}',
   'toast.deleteFail': 'Delete failed: {e}',
   'toast.pngDownloaded': 'PNG downloaded: {n}',

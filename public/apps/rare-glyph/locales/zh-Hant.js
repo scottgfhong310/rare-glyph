@@ -124,7 +124,7 @@ I18n.register('zh-Hant', {
   'toast.uploaded': '已上傳 {n} 個 SVG',
   'toast.uploadFail': '上傳失敗：{e}',
   'toast.saved': '已存檔 {n} 筆 IDS 登錄 → glyphs.js',
-  'toast.saveFail': '存檔失敗：{e}',
+  'toast.saveFail': '存檔失敗：{m}',
   'toast.deleted': '已刪除：{n}',
   'toast.deleteFail': '刪除失敗：{e}',
   'toast.pngDownloaded': '已下載 PNG：{n}',

@@ -770,7 +770,7 @@
       toast(t('toast.saved', { n: r.count }), 'teal');
     }).catch(function (err) {
       hideLoading();
-      toast(t('toast.saveFail', { e: err.message }), 'red');
+      toast(t('toast.saveFail', { m: err.message }), 'red');
     });
   }
 

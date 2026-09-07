@@ -116,7 +116,7 @@ I18n.register('ja', {
   'toast.uploaded': '{n} 個の SVG をアップロードしました',
   'toast.uploadFail': 'アップロード失敗：{e}',
   'toast.saved': 'IDS 登録 {n} 件を保存 → glyphs.js',
-  'toast.saveFail': '保存に失敗：{e}',
+  'toast.saveFail': '保存に失敗：{m}',
   'toast.deleted': '削除しました：{n}',
   'toast.deleteFail': '削除に失敗：{e}',
   'toast.pngDownloaded': 'PNG をダウンロードしました：{n}',
