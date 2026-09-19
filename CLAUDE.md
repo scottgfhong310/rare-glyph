@@ -82,7 +82,7 @@ bash scripts/sync-copies.sh
   `<span class="glyph" style="--g:url('/lib/Typeface/svgs/<file>')" role="img" aria-label="缺字 <stem>" data-ids data-cbeta data-code data-uni data-pinyin data-zhuyin>`（屬性按有值才加）；
   無字形登錄 `buildCharSpan({code,uni,pinyin,zhuyin})` → `<span data-code data-uni data-pinyin data-zhuyin>對應字</span>`，另提供「複製對應字」純字。`stem` = 檔名去 `.svg`（與 `code` 缺字碼區分）。
 - **IDS 引擎在 lib**（`rare-glyph-lib.js`，純邏輯、不碰 DOM、`window.RareGlyphLib`）：`IDC` 運算子表（16 個，含 arity）、
-  `parseIds`（遞迴、surrogate-safe、回 needMore/trailing/empty 錯誤碼）、`describeTree` / `leafChars`、`buildSpan` / `buildCharSpan`、`downloadUrl` / `timestamp`、API 包裝。
+  `parseIds`（遞迴、surrogate-safe、回 needMore/trailing/empty 錯誤碼）、`describeTree` / `leafChars`、`buildSpan` / `buildCharSpan`、**`foldTones`（find 去聲調）**、`downloadUrl` / `timestamp`、API 包裝。
   `rare-glyph.js` 是碰 DOM 的控制器（網格、find 過濾、調色盤、即時驗證/樹、選檔、上傳、刪除、存檔、SVG/PNG 下載、主題/語言）。PNG 光柵化（canvas，白底黑字）在控制器、不放純 lib。
 - **IDC 元數**：⿰⿱⿴–⿽ 二元、⿲⿳ 三元、⿾⿿ 一元。葉節點＝任何非 IDC 運算子的單一碼位。
 - **IDC 後備字型**：`⿼⿽⿾⿿`（U+2FFC–2FFF，Unicode 15.1）＋`U+31EF` 多數系統字型沒有→tofu。bundle `fonts/BabelStoneHan-IDC-subset.woff2`（~5KB、`unicode-range: U+2FF0-2FFF,U+31EF` 限定），以 `'IDCGlyph'` 置於調色盤/結構樹/IDS 輸入框/清單徽章字型堆疊最前。授權 ARPHIC PUBLIC LICENSE（衍生自文鼎 AR PL；`fonts/ARPHIC_PUBLIC_LICENSE.txt` ＋ `LICENSE` §9.1 bundled 聲明）。data-ids 存真正字元、與字型無關。
@@ -99,6 +99,9 @@ bash scripts/sync-copies.sh
   塞進 `data-note` 等於把內部筆記散布到每一份貼出去的文件（同家族 `meta_i18n` 的 `fd_note`：權威在登錄處、不隨產物走）。
   有備註的格子出現一顆 `edit_note` 小圖示（沒有就不出現）；進 find。
 - **find**：純前端跨欄位（file/stem/code/uni/ids/cbeta/pinyin/zhuyin/note）不分大小寫子字串過濾，只過濾顯示。
+  **聲調不分**〔2026-09-19〕：`juan` 搜得到 `juàn`——`Lib.foldTones()`（拼音走 NFD 去 U+0300–U+036F、注音去 `ˊˇˋ˙ˉ`），
+  **查詢與被查字串兩邊都折**。⚠️⚠️ **它是追加的一條路、不是取代嚴格比對**：取代的話「只打一個聲調符號」
+  （`ˊ` 撈所有二聲）會被折成空字串而命中全部；折完是空的就不走寬鬆那條。代價是聲調打錯也會命中（刻意）。
 - **後端安全**（canon §8）：操作目標固定（svgs/ 目錄 / glyphs.js）；檔名 sanitize（basename===原值、非 . / ..、
   不含 `/ \ \0`、**擋 `" ' < > &` 與控制字元**、副檔名須 `.svg`；允許全形描述字元 ＊／＠（） 與 CJK）；落點檢查 `startsWith(SVGS_DIR+sep)`；
   registry 每筆需 `file` 或 `code` 其一、file/code 各自唯一、ids/cbeta/code/uni/pinyin/zhuyin 擋 `\0`／控制字元、**`note` 放行 `\n`／`\t`、其餘控制字元照擋**、timestamp `^\d{0,14}$`；覆寫/刪除前 `.bak`；以 `JSON.stringify` 重寫（字串安全跳脫）。

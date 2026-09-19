@@ -21,6 +21,7 @@
  *   codeFromFile(file)       → 去 .svg 副檔名（aria-label「缺字 {code}」用）
  *   svgUrl(file)             → /lib/Typeface/svgs/<file>
  *   buildSpan({file, ids, …, pinyin, zhuyin}) → <span class="glyph" …> 字串
+ *   foldTones(str)           → 去聲調（find 用；拼音走 NFD 去組合記號、注音去 ˊˇˋ˙）
  *   isUploadableSvg(name)    → 副檔名白名單（.svg）
  *   listFiles() / uploadFiles(files) / deleteFile(file) / saveRegistry(entries)
  *   formatSize(bytes) / timestamp(date)
@@ -180,6 +181,21 @@
     return '<span' + (attrs.length ? ' ' + attrs.join(' ') : '') + '>' + escAttr(uni) + '</span>';
   }
 
+  /**
+   * 去聲調（find 專用）：讓「打不出聲調符號」的查詢也命中。
+   *   foldTones('juàn') === 'juan' ／ foldTones('ㄐㄩㄢˋ') === 'ㄐㄩㄢ'
+   * 兩種記音系統的聲調在 Unicode 裡是兩種東西，所以要兩條路：
+   *   - 拼音的聲調是**組合記號**（á = a + U+0301）⇒ NFD 拆開再去掉 U+0300–U+036F。
+   *     ⚠️ 同一段也含 ü 的兩點、ǹ ḿ 的記號，一併去掉是刻意的（`nu` 找得到 `nǚ`）。
+   *   - 注音的聲調是**獨立字元**（ˊ ˇ ˋ ˙，還有極少用的 ˉ）⇒ NFD 動不到它們，另外逐字去掉。
+   * ⚠️ 呼叫端要**兩邊都折**（查詢與被查的字串），只折一邊等於換一種方式漏。
+   */
+  function foldTones(s) {
+    return String(s == null ? '' : s)
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[\u02c9\u02ca\u02c7\u02cb\u02d9]/g, '');
+  }
+
   function isUploadableSvg(name) { return /\.svg$/i.test(String(name == null ? '' : name)); }
 
   /* ---- API 包裝（一律回 { ok, ... }；讀取走 no-store + cache-busting） ---- */
@@ -271,6 +287,7 @@
     downloadUrl: downloadUrl,
     buildSpan: buildSpan,
     buildCharSpan: buildCharSpan,
+    foldTones: foldTones,
     suggestCode: suggestCode,
     isUploadableSvg: isUploadableSvg,
     listFiles: listFiles,

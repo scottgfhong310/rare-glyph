@@ -22,6 +22,7 @@
     current: null,      // 目前選中的 _key
     seq: 0,             // 未存檔無字形登錄的臨時 key 序號
     filter: '',         // find 搜尋字串（小寫；跨 file/code/uni/ids/cbeta/pinyin/zhuyin/note 比對）
+    filterFolded: '',   // 同上但去掉聲調（juan 也搜得到 juàn）；只有聲調符號時為空＝不走寬鬆比對
     reviewFilter: '',   // 檢視篩選：'' | 'dirty'（更改＋新增）| 'nocode'（無字形登錄缺缺字碼）
     savedByKey: {}      // 已存檔基準（key → 持久化快照）；與 metaByKey 比對得 dirty
   };
@@ -528,7 +529,11 @@
     var m = metaOf(f._key);
     var hay = [f.file || '', Lib.codeFromFile(f.file || ''), m.code, m.uni, m.ids, m.cbeta, m.pinyin, m.zhuyin, m.note]
       .join('\n').toLowerCase();
-    return hay.indexOf(state.filter) >= 0;
+    if (hay.indexOf(state.filter) >= 0) return true;
+    // 再走一次「去聲調」的寬鬆比對：讓打不出 àáǎ 的人也搜得到（juan → juàn）。
+    // ⚠️ 這是**追加**的一條路、不是取代原本那條——否則只打一個聲調符號（如 ˊ，用來撈出所有二聲）
+    //    會被折成空字串而命中全部。折完是空的就不走這條。
+    return !!state.filterFolded && Lib.foldTones(hay).indexOf(state.filterFolded) >= 0;
   }
 
   function renderGrid() {
@@ -569,6 +574,7 @@
   function onFind() {
     var inp = document.getElementById('glyph-find');
     state.filter = inp.value.trim().toLowerCase();
+    state.filterFolded = Lib.foldTones(state.filter);   // 空字串＝這個查詢只有聲調符號，不走寬鬆那條
     renderGrid();
   }
 

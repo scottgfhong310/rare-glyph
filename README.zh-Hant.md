@@ -17,7 +17,7 @@
 - **無字形登錄** — 已有對應 Unicode 字、不需字形圖者（如 `&T014461;=𢤱`），可不附 `.svg` 直接登錄（以 `code` 為鍵）。
 - **產生 span** — 字形登錄產生 `.glyph` mask span；無字形登錄產生帶 code 的註記 `<span data-code data-uni data-pinyin data-zhuyin>字</span>`，並另提供「複製對應字」純字。
 - **依加入時間排序** — 每筆有 `timestamp`，清單最近加入排最前（含無字形登錄）。
-- **find** — 單一搜尋框跨 `code` / `uni` / `ids` / `cbeta` / 讀音 / 備註 / 檔名不分欄位過濾。
+- **find** — 單一搜尋框跨 `code` / `uni` / `ids` / `cbeta` / 讀音 / 備註 / 檔名不分欄位過濾。**不分聲調**：`juan` 搜得到 `juàn`；而單獨打一個聲調符號（`ˊ`）仍然只列出該聲調的字。
 - **下載** — 原始 SVG，或前端光柵化的**白底黑字 PNG**。
 - 三語介面（`zh-Hant` / `en` / `ja`）、light/dark 主題（預設 dark）。
 

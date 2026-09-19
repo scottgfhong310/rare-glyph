@@ -17,7 +17,7 @@ Part of the **nodeapp WebApp family** — shared conventions live in [nodeapp-we
 - **Code-only entries** — for glyphs that already exist in Unicode (no SVG needed, e.g. `&T014461;=𢤱`), register them without a `.svg` (keyed by `code`).
 - **Span generator** — `.glyph` mask span for glyph entries, or an annotated `<span data-code data-uni data-pinyin data-zhuyin>char</span>` for code-only entries; plus a one-click "copy character".
 - **Sort by added time** — every entry carries a `timestamp`; the list sorts newest-first (code-only entries included).
-- **Find** — one search box filters the list across `code` / `uni` / `ids` / `cbeta` / readings / note / filename (field-agnostic substring).
+- **Find** — one search box filters the list across `code` / `uni` / `ids` / `cbeta` / readings / note / filename (field-agnostic substring). **Tone-insensitive**: `juan` finds `juàn`, `ㄐㄩㄢ` finds `ㄐㄩㄢˋ` — while a lone tone mark (`ˊ`) still lists just that tone.
 - **Download** — original SVG, or a white-background black-glyph **PNG** rasterized client-side.
 - Three-language UI (`zh-Hant` / `en` / `ja`), light/dark theme (default dark).
 
