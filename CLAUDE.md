@@ -95,8 +95,8 @@ bash scripts/sync-copies.sh
   ——Unicode 的順序不是注音表的順序）＋ 4 個聲調（**一聲不標**）；點一下**插進游標處**（不是複製），
   `mousedown` 先 `preventDefault()` 免得按鈕搶走游標。
 - **備註欄 `note`**〔2026-09-19〕：策劃者的工作註記，**多行**（唯一允許換行的欄位，CRLF 正規化成 LF）。
-  ⚠️⚠️ **刻意不輸出到 span**——其他欄位描述「那個字」，備註描述「這份工作」，塞進 `data-note`
-  等於把內部筆記散布到每一份貼出去的文件（同家族 `meta_i18n` 的 `fd_note`：權威在登錄處、不隨產物走）。
+  ⚠️⚠️ **刻意不輸出到 span**〔**owner 2026-09-19 拍板**，不是暫時的〕——其他欄位描述「那個字」，備註描述「這份工作」，
+  塞進 `data-note` 等於把內部筆記散布到每一份貼出去的文件（同家族 `meta_i18n` 的 `fd_note`：權威在登錄處、不隨產物走）。
   有備註的格子出現一顆 `edit_note` 小圖示（沒有就不出現）；進 find。
 - **find**：純前端跨欄位（file/stem/code/uni/ids/cbeta/pinyin/zhuyin/note）不分大小寫子字串過濾，只過濾顯示。
 - **後端安全**（canon §8）：操作目標固定（svgs/ 目錄 / glyphs.js）；檔名 sanitize（basename===原值、非 . / ..、
