@@ -20,7 +20,7 @@
  *   leafChars(tree)          → 組件葉節點字元陣列
  *   codeFromFile(file)       → 去 .svg 副檔名（aria-label「缺字 {code}」用）
  *   svgUrl(file)             → /lib/Typeface/svgs/<file>
- *   buildSpan({file, ids})   → <span class="glyph" …> 字串
+ *   buildSpan({file, ids, …, pinyin, zhuyin}) → <span class="glyph" …> 字串
  *   isUploadableSvg(name)    → 副檔名白名單（.svg）
  *   listFiles() / uploadFiles(files) / deleteFile(file) / saveRegistry(entries)
  *   formatSize(bytes) / timestamp(date)
@@ -132,7 +132,7 @@
   /**
    * 產生家族慣例的缺字 span（與 markdown-library / markdown-reader 的 .glyph 相容）：
    * <span class="glyph" style="--g:url('/lib/Typeface/svgs/<file>')" role="img"
-   *       aria-label="缺字 <code>" data-ids="<ids>"></span>
+   *       aria-label="缺字 <code>" data-ids="<ids>" data-pinyin="<pinyin>" data-zhuyin="<zhuyin>"></span>
    * url() 內以單引號包路徑；style 屬性用雙引號 → 互不衝突。
    */
   function buildSpan(opt) {
@@ -142,6 +142,8 @@
     var cbeta = String(opt.cbeta == null ? '' : opt.cbeta).trim();
     var code = String(opt.code == null ? '' : opt.code).trim();   // 大正藏/CBETA 缺字碼（如 T014461）
     var uni = String(opt.uni == null ? '' : opt.uni).trim();      // 對應的 Unicode 字（如 𢤱）
+    var pinyin = String(opt.pinyin == null ? '' : opt.pinyin).trim();  // 漢語拼音（如 luò）
+    var zhuyin = String(opt.zhuyin == null ? '' : opt.zhuyin).trim();  // 國語注音（如 ㄌㄨㄛˋ）
     var stem = opt.stem != null ? String(opt.stem) : codeFromFile(file);  // 顯示用識別（檔名去副檔名）
     // style 屬性用雙引號包覆、url() 內用單引號包路徑；路徑內單引號跳脫（極罕見）。
     var urlInner = svgUrl(file).replace(/'/g, "\\'");
@@ -154,21 +156,27 @@
     if (cbeta) attrs += ' data-cbeta="' + escAttr(cbeta) + '"';   // CBETA 組字式
     if (code) attrs += ' data-code="' + escAttr(code) + '"';      // 大正藏/CBETA 缺字碼
     if (uni) attrs += ' data-uni="' + escAttr(uni) + '"';         // 對應 Unicode 字
+    if (pinyin) attrs += ' data-pinyin="' + escAttr(pinyin) + '"'; // 漢語拼音
+    if (zhuyin) attrs += ' data-zhuyin="' + escAttr(zhuyin) + '"'; // 國語注音符號
     return '<span ' + attrs + '></span>';
   }
 
   /**
    * 無字形（已有對應 Unicode 字、無 .svg）的「帶 code 註記 span」：
-   * <span data-code="T014461" data-uni="𢤱">𢤱</span>（內容為對應字本身）
+   * <span data-code="T014461" data-uni="𢤱" data-pinyin="lǒng" data-zhuyin="ㄌㄨㄥˇ">𢤱</span>（內容為對應字本身）
    * 保留缺字碼來源，利日後轉換／檢索；有對應字時內容即該字。
    */
   function buildCharSpan(opt) {
     opt = opt || {};
     var code = String(opt.code == null ? '' : opt.code).trim();
     var uni = String(opt.uni == null ? '' : opt.uni).trim();
+    var pinyin = String(opt.pinyin == null ? '' : opt.pinyin).trim();
+    var zhuyin = String(opt.zhuyin == null ? '' : opt.zhuyin).trim();
     var attrs = [];
     if (code) attrs.push('data-code="' + escAttr(code) + '"');
     if (uni) attrs.push('data-uni="' + escAttr(uni) + '"');
+    if (pinyin) attrs.push('data-pinyin="' + escAttr(pinyin) + '"');
+    if (zhuyin) attrs.push('data-zhuyin="' + escAttr(zhuyin) + '"');
     return '<span' + (attrs.length ? ' ' + attrs.join(' ') : '') + '>' + escAttr(uni) + '</span>';
   }
 

@@ -28,7 +28,7 @@
 沿用家族理念（zero-build / CDN-first、薄後端純前端核心、可嵌入 lib、三語標配、安全內建）。本 app 額外的取捨：
 
 - **以「缺字語料的擁有者工具」自我定位**：它是 `markdown-library` 等閱讀器的**伴生編輯工具**，產物（span / glyphs.js）餵回那些 app。
-- **資料與程式分離**：字形語料在共用 `/lib/Typeface/svgs/`；描述資料（IDS/CBETA/code/uni/timestamp）在 `glyphs.js` 登錄。
+- **資料與程式分離**：字形語料在共用 `/lib/Typeface/svgs/`；描述資料（IDS/CBETA/code/uni/讀音/timestamp）在 `glyphs.js` 登錄。
 - **記憶體為編輯中的唯一真相**：所有編輯先進記憶體，按「存檔」才寫回 `glyphs.js`（覆寫前 `.bak`）。
 
 ---
@@ -89,6 +89,8 @@ rare-glyph/
   "cbeta": "",              // CBETA 組字式（口*洛、木*(於-方)），可空
   "code":  "T014461",       // 大正藏/CBETA 缺字碼，可空
   "uni":   "𢤱",            // 對應的既有 Unicode 字，可空
+  "pinyin": "lǒng",         // 查得到的漢語拼音（多音以 / 分隔），可空
+  "zhuyin": "ㄌㄨㄥˇ",       // 查得到的國語注音符號（多音以 / 分隔），可空
   "timestamp": "20260627220102"  // 加入時間 yyyyMMddHHmmss
 }
 ```
@@ -104,7 +106,8 @@ rare-glyph/
 ```jsonc
 { "ok": true, "files": [
   { "file":"T011774.svg", "hasSvg":true, "stem":"T011774", "size":7501, "mtime":..., "birthtime":...,
-    "timestamp":"20260627220102", "ids":"", "cbeta":"", "code":"T014461", "uni":"𢤱" }
+    "timestamp":"20260627220102", "ids":"", "cbeta":"", "code":"T014461", "uni":"𢤱",
+    "pinyin":"lǒng", "zhuyin":"ㄌㄨㄥˇ" }
 ] }
 ```
 
@@ -114,7 +117,7 @@ rare-glyph/
 ### 5.3 前端記憶體狀態（key 為中心）
 
 每條目有穩定 `_key`：svg＝檔名、code-only＝`'code:'+code`（未存檔暫為 `'new:'+seq`）。
-`state.metaByKey[_key] = { ids, cbeta, code, uni, timestamp }` 為編輯中唯一真相；
+`state.metaByKey[_key] = { ids, cbeta, code, uni, pinyin, zhuyin, timestamp }` 為編輯中唯一真相；
 `loadFiles` 重載時，已在記憶體者保留其（可能未存檔的）編輯，未存檔的 `'new:'` 無字形登錄也保留不致遺失。
 
 ---
@@ -126,7 +129,7 @@ rare-glyph/
 | GET | `/api/rare-glyph/list` | 列 `svgs/*.svg` + 併入登錄 meta + 併入 code-only 登錄；依 timestamp 降冪 |
 | POST | `/api/rare-glyph/upload` | 上傳 `.svg` 到 svgs/（multipart `myFiles`、≤20、同名覆寫） |
 | POST | `/api/rare-glyph/delete` | 刪除 `svgs/<file>`（覆寫/刪除前 `.bak`）body `{ file }` |
-| POST | `/api/rare-glyph/registry` | 重寫 `glyphs.js`（`.bak`）body `{ entries:[{file,ids,cbeta,code,uni,timestamp}] }` |
+| POST | `/api/rare-glyph/registry` | 重寫 `glyphs.js`（`.bak`）body `{ entries:[{file,ids,cbeta,code,uni,pinyin,zhuyin,timestamp}] }` |
 
 全部回 `{ ok }`；錯誤 `{ ok:false, error }`。
 
@@ -166,12 +169,24 @@ rare-glyph/
 - 對應字以正常字型大字顯示、附碼位（`U+22931`）、行內複製 icon；網格亦以強調色標出。
 - 兩值輸出為 span 的 `data-code` / `data-uni`。
 
+### 7.5b 讀音（拼音 / 國語注音）
+
+詳情另可編輯兩個讀音欄，**兩欄各自可空——查得到才填**（罕見字常常查不到，空白是資料的事實，不是漏填）：
+
+- `pinyin`（漢語拼音，如 `lǒng`）／`zhuyin`（國語注音符號，如 `ㄌㄨㄥˇ`）。
+- **自由文字、不做格式驗證**：多音字寫成 `luò / lào`、`ㄌㄨㄛˋ / ㄌㄠˋ`。
+  （罕見字的讀音來源本來就雜——字典、CBETA 注、韻書擬音——硬套格式會逼使用者把「查到的樣子」改掉。）
+- 兩值輸出為 span 的 `data-pinyin` / `data-zhuyin`（兩型 span 皆然），並進入 find 的搜尋欄位。
+- 網格格子上另有一列讀音：**有注音顯示注音、否則顯示拼音**；兩者皆空時**整列不出現**
+  （與恆佔位的 `.cell-ids` 刻意不同——讀音是少數條目才有的東西，恆佔位會讓每一格都多一條空白）。
+- ⚠️ **重複檢視（`review.dup`）刻意不掃這兩欄**：同音字本來就成群，納入會把一整批正常資料標成「重複」。
+
 ### 7.6 產生的 span（依型態）
 
 - **字形登錄**：`.glyph` mask span
-  `<span class="glyph" style="--g:url('/lib/Typeface/svgs/<file>')" role="img" aria-label="缺字 <stem>" data-ids data-cbeta data-code data-uni>`（屬性按有值才加）。
+  `<span class="glyph" style="--g:url('/lib/Typeface/svgs/<file>')" role="img" aria-label="缺字 <stem>" data-ids data-cbeta data-code data-uni data-pinyin data-zhuyin>`（屬性按有值才加）。
 - **無字形登錄**：帶 code 的註記 span（內容即對應字）
-  `<span data-code="T014461" data-uni="𢤱">𢤱</span>`，並另提供「複製對應字」純字輸出（兩者都給）。
+  `<span data-code="T014461" data-uni="𢤱" data-pinyin="lǒng" data-zhuyin="ㄌㄨㄥˇ">𢤱</span>`，並另提供「複製對應字」純字輸出（兩者都給）。
 
 ### 7.7 timestamp 與排序
 
@@ -179,7 +194,7 @@ rare-glyph/
 
 ### 7.8 find（跨欄位搜尋）
 
-單一搜尋框，**不分欄位**對 `file` / `stem` / `code` / `uni` / `ids` / `cbeta` 做不分大小寫子字串比對，即時過濾網格；計數列顯示「n / total」；清除鈕還原。只過濾顯示，不影響選取與資料。
+單一搜尋框，**不分欄位**對 `file` / `stem` / `code` / `uni` / `ids` / `cbeta` / `pinyin` / `zhuyin` 做不分大小寫子字串比對，即時過濾網格；計數列顯示「n / total」；清除鈕還原。只過濾顯示，不影響選取與資料。
 
 ### 7.9 下載
 
@@ -209,7 +224,7 @@ rare-glyph/
 - **操作目標固定**：`svgs/` 目錄與 `glyphs.js`，不接受任意外部路徑。
 - **檔名消毒**：trim、非空、`basename===原值`、非 `.`/`..`、不含 `/ \ \0`、**且擋 `" ' < > &` 與控制字元**（檔名會被前端塞進屬性，防屬性逸出 / DOM 注入；全形描述字元 ＊／（）＠ 不受影響）、副檔名須 `.svg`。
 - **落點檢查**：`abs === SVGS_DIR || abs.startsWith(SVGS_DIR + sep)`。
-- **registry 驗證**：每筆需 `file` 或 `code` 其一；file 唯一、code-only 的 code 唯一；ids/cbeta/code/uni 擋 `\0`/控制字元；timestamp 須 `^\d{0,14}$`；以 `JSON.stringify` 重寫（字串自帶安全跳脫）。
+- **registry 驗證**：每筆需 `file` 或 `code` 其一；file 唯一、code-only 的 code 唯一；ids/cbeta/code/uni/pinyin/zhuyin 擋 `\0`/控制字元；timestamp 須 `^\d{0,14}$`；以 `JSON.stringify` 重寫（字串自帶安全跳脫）。
 - **寫前備份**：覆寫 / 刪除前 `.bak/<name>-yyyyMMddHHmmss.bak`（`.bak/` 已 gitignore）。
 - **前端輸出**：控制器 `escHtml` 跳脫 `& < > " '`（含屬性情境）；lib `escAttr` 同。
 - **上傳上限**：`.array('myFiles', 20)`、`fileSize 5MB`；`express.json({ limit:'5mb' })`。
@@ -233,7 +248,7 @@ npm install && node app.js          # → http://localhost:3000/apps/rare-glyph/
 
 驗證清單（preview 實跑）：路由 `/`→302、app 頁 / 資產 200、API `{ok}`、API 404 JSON；
 產生 span 與需求逐字一致；IDS 驗證三態 + 結構樹；缺字 mask 在 light/dark/列印正確；
-上傳 / 刪除 / 存檔 end-to-end（`.bak`）；timestamp 降冪排序（含 code-only）；find 跨欄位過濾；
+上傳 / 刪除 / 存檔 end-to-end（`.bak`）；timestamp 降冪排序（含 code-only）；find 跨欄位過濾（含讀音）；
 SVG / PNG 下載；三語 + 主題切換；無 console 錯誤。
 
 ---
@@ -246,7 +261,7 @@ CSS 變數 light/dark 預設 dark + 防閃爍、`.side-tools` flex 工具列（�
 
 偏離：語料根用共用 `/lib/Typeface/svgs/`（見 §9）。
 
-新模式（可回饋家族）：**缺字 `.glyph` 登錄/產生器**——「以 mask + currentColor 呈現缺字 SVG，並以登錄檔（IDS/CBETA/code/uni/timestamp）描述、產生可貼用 span」這一套，可供其他需要缺字的佛典類 app 共用。
+新模式（可回饋家族）：**缺字 `.glyph` 登錄/產生器**——「以 mask + currentColor 呈現缺字 SVG，並以登錄檔（IDS/CBETA/code/uni/讀音/timestamp）描述、產生可貼用 span」這一套，可供其他需要缺字的佛典類 app 共用。
 
 ---
 
@@ -258,6 +273,10 @@ CSS 變數 light/dark 預設 dark + 防閃爍、`.side-tools` flex 工具列（�
 - **無字形登錄輸出**：提供「帶 code 註記 span」+「純對應字」兩種（使用者可二擇）。
 - **移除 `new` 側鍵**：與三條編輯入口重複且具破壞性，收斂移除。
 - **find 為純前端過濾**：跨欄位子字串、即時、不影響資料；故不需後端搜尋 API。
+- **讀音分兩欄不合成一欄**（2026-09-19）：拼音與注音是**兩套記音系統**，一欄存不下
+  ——合成一欄之後「這串是哪一種」只能靠猜字元集，而多音字（`luò / lào`）會讓那個猜法更不可靠。
+  兩欄各自可空也才表達得出「拼音查得到、注音查不到」這種真實狀態。
+  ⚠️ 相對地，**重複檢視不掃這兩欄**：同音字成群是常態，掃了等於把正常資料標成重複。
 
 ---
 

@@ -22,7 +22,7 @@ I18n.register('ja', {
   'files.loading': '読み込み中…',
   'files.count': '{n} 件',
   'files.matchCount': '{n} / {total} 件一致',
-  'files.findPh': 'コード / 対応字 / IDS / CBETA / ファイル名で検索…',
+  'files.findPh': 'コード / 対応字 / 読み / IDS / CBETA / ファイル名で検索…',
   'review.label': 'レビュー',
   'review.dirty': '未保存',
   'review.nocode': 'コード無し',
@@ -63,6 +63,13 @@ I18n.register('ja', {
   'code.regen': '既定コード yyyyMMdd-### を入れる（当日の次番）',
   'uni.label': '対応する Unicode 文字',
   'uni.placeholder': '例：𢤱',
+
+  /* 読み（ピンイン / 注音符号） */
+  'reading.title': '読み（調べられたものだけ）',
+  'pinyin.label': 'ピンイン',
+  'pinyin.placeholder': '例：luò（複数は / 区切り）',
+  'zhuyin.label': '注音符号',
+  'zhuyin.placeholder': '例：ㄌㄨㄛˋ（複数は / 区切り）',
 
   /* 字形なし登録（.svg なし・既に Unicode にある） */
   'files.addCodeOnly': '字形なし追加',

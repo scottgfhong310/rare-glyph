@@ -5,6 +5,8 @@
  *   cbeta：該缺字的 CBETA 組字式（如 口*洛、木*(於-方)），可空；規則見 https://cbeta.org/character-composition-rules
  *   code ：大正藏/CBETA 缺字碼（如 T014461、MT01414），可空
  *   uni  ：該缺字對應的既有 Unicode 字（如 𢤱），可空
+ *   pinyin：該字查得到的漢語拼音（如 luò；多音以 / 分隔），可空
+ *   zhuyin：該字查得到的國語注音符號（如 ㄌㄨㄛˋ），可空
  *   timestamp：加入時間 yyyyMMddHHmmss（清單依此降冪排序；無字形登錄亦可排序）
  */
 window.RG_GLYPHS = [
@@ -14,6 +16,8 @@ window.RG_GLYPHS = [
     "cbeta": "口*洛",
     "code": "",
     "uni": "",
+    "pinyin": "",
+    "zhuyin": "",
     "timestamp": "20241108095056"
   },
   {
@@ -22,6 +26,8 @@ window.RG_GLYPHS = [
     "cbeta": "",
     "code": "",
     "uni": "",
+    "pinyin": "",
+    "zhuyin": "",
     "timestamp": "20241107083904"
   },
   {
@@ -30,6 +36,8 @@ window.RG_GLYPHS = [
     "cbeta": "",
     "code": "",
     "uni": "",
+    "pinyin": "",
+    "zhuyin": "",
     "timestamp": "20241111154709"
   },
   {
@@ -38,6 +46,8 @@ window.RG_GLYPHS = [
     "cbeta": "",
     "code": "",
     "uni": "",
+    "pinyin": "",
+    "zhuyin": "",
     "timestamp": "20250827185546"
   },
   {
@@ -46,6 +56,8 @@ window.RG_GLYPHS = [
     "cbeta": "",
     "code": "T014461",
     "uni": "𢤱",
+    "pinyin": "",
+    "zhuyin": "",
     "timestamp": "20260627220102"
   },
   {
@@ -54,6 +66,8 @@ window.RG_GLYPHS = [
     "cbeta": "",
     "code": "",
     "uni": "",
+    "pinyin": "",
+    "zhuyin": "",
     "timestamp": "20260627202824"
   }
 ];

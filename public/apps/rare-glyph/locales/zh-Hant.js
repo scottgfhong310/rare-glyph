@@ -24,7 +24,7 @@ I18n.register('zh-Hant', {
   'files.loading': '載入中…',
   'files.count': '{n} 個缺字',
   'files.matchCount': '{n} / {total} 筆符合',
-  'files.findPh': '搜尋 缺字碼 / 對應字 / IDS / CBETA / 檔名…',
+  'files.findPh': '搜尋 缺字碼 / 對應字 / 讀音 / IDS / CBETA / 檔名…',
   'review.label': '檢視',
   'review.dirty': '未存檔變更',
   'review.nocode': '缺缺字碼',
@@ -66,6 +66,13 @@ I18n.register('zh-Hant', {
   'code.regen': '套用預設碼 yyyyMMdd-###（當天下一號）',
   'uni.label': '對應 Unicode 字',
   'uni.placeholder': '例：𢤱',
+
+  /* 讀音（拼音 / 國語注音） */
+  'reading.title': '讀音（查得到才填）',
+  'pinyin.label': '拼音',
+  'pinyin.placeholder': '例：luò（多音以 / 分隔）',
+  'zhuyin.label': '國語注音',
+  'zhuyin.placeholder': '例：ㄌㄨㄛˋ（多音以 / 分隔）',
 
   /* 無字形登錄（無 .svg、已有對應 Unicode 字） */
   'files.addCodeOnly': '新增無字形',

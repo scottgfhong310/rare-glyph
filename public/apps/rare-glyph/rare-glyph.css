@@ -425,6 +425,13 @@ main { padding: 8px 0 16px; }
 .detail-codeuni .input-field label { white-space: nowrap; }
 .detail-codeuni input[type="text"] { color: var(--text); }
 
+/* 讀音兩欄（拼音 / 國語注音）：與缺字碼區同一套欄位語言，只縮小上方間距 */
+.detail-reading { display: block; }
+.detail-reading .field-label { margin: 10px 0 0; }
+.detail-reading .input-field { margin: 1.1rem 0 .4rem; }
+.detail-reading .input-field label { white-space: nowrap; }
+.detail-reading input[type="text"] { color: var(--text); }
+
 /* code 欄的「重產預設碼」icon（input-field 內右側） */
 .code-field { position: relative; }
 .code-field #code-input { padding-right: 30px; }
@@ -439,6 +446,8 @@ main { padding: 8px 0 16px; }
 .field-icon-btn:hover, .field-icon-btn:focus, .field-icon-btn:active { color: var(--accent); background: transparent; }
 .field-icon-btn i.material-icons { font-size: 18px; line-height: 1; }
 .cell-uni { font-size: .8rem; line-height: 1; color: var(--accent); }
+/* 格上的讀音列：注音優先、其次拼音；兩者皆空時整列不出現（與恆佔位的 .cell-ids 不同） */
+.glyph-cell .cell-read { font-size: .62rem; line-height: 1.2; color: var(--muted); max-width: 100%; word-break: break-word; }
 .detail-meta { min-width: 0; }
 .detail-code { font-size: 1rem; font-weight: 600; word-break: break-all; }
 .detail-file { font-size: .76rem; color: var(--muted); word-break: break-all; }

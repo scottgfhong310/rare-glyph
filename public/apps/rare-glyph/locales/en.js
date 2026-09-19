@@ -22,7 +22,7 @@ I18n.register('en', {
   'files.loading': 'Loading…',
   'files.count': '{n} glyph(s)',
   'files.matchCount': '{n} / {total} match',
-  'files.findPh': 'Find by code / char / IDS / CBETA / filename…',
+  'files.findPh': 'Find by code / char / reading / IDS / CBETA / filename…',
   'review.label': 'Review',
   'review.dirty': 'Unsaved',
   'review.nocode': 'Missing code',
@@ -63,6 +63,13 @@ I18n.register('en', {
   'code.regen': 'Fill default code yyyyMMdd-### (next today)',
   'uni.label': 'Corresponding Unicode char',
   'uni.placeholder': 'e.g. 𢤱',
+
+  /* Readings (Pinyin / Bopomofo) */
+  'reading.title': 'Readings (fill in what you can look up)',
+  'pinyin.label': 'Pinyin',
+  'pinyin.placeholder': 'e.g. luò (separate multiple with /)',
+  'zhuyin.label': 'Zhuyin (Bopomofo)',
+  'zhuyin.placeholder': 'e.g. ㄌㄨㄛˋ (separate multiple with /)',
 
   /* Code-only entries (no .svg; already in Unicode) */
   'files.addCodeOnly': 'Add code-only',

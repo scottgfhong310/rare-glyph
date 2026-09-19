@@ -231,6 +231,21 @@
             </div>
           </div>
 
+          <!-- 讀音：拼音 / 國語注音（查得到才填；兩欄各自可空） -->
+          <div class="detail-reading">
+            <div class="field-label" data-i18n="reading.title">讀音（查得到才填）</div>
+            <div class="input-field">
+              <input type="text" id="pinyin-input" spellcheck="false" autocomplete="off"
+                     data-i18n-placeholder="pinyin.placeholder" placeholder="例：luò（多音以 / 分隔）">
+              <label for="pinyin-input" data-i18n="pinyin.label">拼音</label>
+            </div>
+            <div class="input-field">
+              <input type="text" id="zhuyin-input" spellcheck="false" autocomplete="off"
+                     data-i18n-placeholder="zhuyin.placeholder" placeholder="例：ㄌㄨㄛˋ（多音以 / 分隔）">
+              <label for="zhuyin-input" data-i18n="zhuyin.label">國語注音</label>
+            </div>
+          </div>
+
           <div class="input-field span-field">
             <textarea id="span-output" class="materialize-textarea" readonly spellcheck="false"></textarea>
             <span class="helper-text" data-i18n="detail.spanLabel">產生的 span（貼到 markdown-library / markdown-reader 文件）</span>
