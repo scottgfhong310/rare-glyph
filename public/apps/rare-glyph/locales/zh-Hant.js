@@ -84,6 +84,7 @@ I18n.register('zh-Hant', {
   'note.label': '備註',
   'note.placeholder': '例：出處、與哪個字混用、還要再查什麼…',
   'note.hint': '只留在登錄檔裡，不會進到產生的 span',
+  'note.snips': '常用註記（點一下插入）',
 
   /* 無字形登錄（無 .svg、已有對應 Unicode 字） */
   'files.addCodeOnly': '新增無字形',

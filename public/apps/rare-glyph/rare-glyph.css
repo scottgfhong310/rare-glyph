@@ -454,6 +454,22 @@ main { padding: 8px 0 16px; }
 [data-theme="dark"] .zy-tones .zy-key { color: var(--accent); }
 .zy-hint { font-size: .68rem; color: var(--muted); margin-top: 6px; }
 
+/* 備註的常用註記：一排文字鍵，點一下插進備註欄 */
+.note-snips { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 2px 0 8px; }
+.snip-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.snip-btn {
+  padding: 2px 8px;
+  font-size: .74rem; line-height: 1.5;
+  border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--muted);
+  cursor: pointer; transition: color .15s, border-color .15s, background .15s, transform .1s;
+}
+.snip-btn:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+.snip-btn:active { transform: translateY(0); }
+/* 同 .idc-btn／.qc-btn／.zy-key 那一條：不吃 Materialize 對 <button> 的 teal 互動底色 */
+.snip-btn:hover, .snip-btn:focus, .snip-btn:active { background-color: var(--surface); }
+[data-theme="dark"] .snip-btn:hover { color: #fff; }
+
 /* 備註：多行，只留在登錄檔裡（不進 span） */
 .detail-note { display: block; }
 .detail-note .input-field { margin: 1.4rem 0 .4rem; }

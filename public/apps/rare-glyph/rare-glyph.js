@@ -243,6 +243,52 @@
     });
   }
 
+  /* ---------- 備註常用註記（點一下插進「備註」欄的游標處） ----------
+   * ⚠️ **這一排是「資料」不是 UI 文案**（家族 §6.1 兩條通道，同 app-launcher 的 registry）
+   *    ⇒ 刻意不進 locales、不翻譯：註記是 owner 用自己的語言寫的內容，不是介面文字。
+   * ⚠️ 清單來自 owner 在同領域實際寫過的東西（`db_siddham` 的 tb_glyph_correction 17 筆理由
+   *    ＋ tb_glyph_review_flag 4 筆），抓的是**反覆出現的形狀**不是整句：
+   *    判定依據／誤植／待確認／易混／異體／出處。**要改就改這個陣列，改完重整就生效。**
+   * `back` = 插入後游標回退幾個字（讓游標落在「」裡面）；`stamp` = 插入今天的日期。 */
+  var NOTE_SNIPPETS = [
+    { text: '待查' },
+    { text: '待確認' },
+    { text: '疑誤植：' },
+    { text: '出處：' },
+    { text: '依字形判定：' },
+    { text: '與「」易混', back: 3 },
+    { text: '異體：' },
+    { stamp: true }
+  ];
+
+  // 日期戳記〔yyyy-MM-dd〕——備註沒有 audit 欄位，要記「什麼時候寫的」只能寫在內文裡
+  function todayStamp() {
+    var d = new Date();
+    return '〔' + d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + '〕';
+  }
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+  function renderNoteSnips() {
+    var box = document.getElementById('note-snips');
+    if (!box) return;
+    box.innerHTML = '';
+    NOTE_SNIPPETS.forEach(function (e) {
+      var text = e.stamp ? todayStamp() : e.text;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'snip-btn';
+      b.textContent = text;
+      b.title = text;
+      b.addEventListener('mousedown', function (ev) { ev.preventDefault(); });   // 別搶走備註欄的游標
+      b.addEventListener('click', function () {
+        if (!state.current) return;
+        insertAtCaret(document.getElementById('note-input'), e.stamp ? todayStamp() : e.text, e.back || 0);
+        onNoteInput();
+      });
+      box.appendChild(b);
+    });
+  }
+
   /* ---------- 注音鍵盤（點一下插進「國語注音」欄的游標處） ----------
    * 符號 U+3105–U+3129 連續 37 個，直接由碼位產生——逐個列舉的話，哪天漏一個看起來與「本來就沒有」一樣。
    * 聲調只給 ˊˇˋ˙ 四個：一聲不標（教育部慣例），列一顆 ˉ 反而會讓同一個音出現兩種寫法。 */
@@ -958,6 +1004,7 @@
     renderPalette();
     renderCbetaPalette();
     renderZhuyinPad();
+    renderNoteSnips();
     renderQuickCopy();
     renderGrid();
     refreshDirty();   // 重設存檔鍵 title（I18n.apply 會把 data-i18n-title 蓋回非 dirty 版）
@@ -1041,6 +1088,7 @@
     renderPalette();
     renderCbetaPalette();
     renderZhuyinPad();
+    renderNoteSnips();
     renderQuickCopy();
     bind();
     initDragDrop();

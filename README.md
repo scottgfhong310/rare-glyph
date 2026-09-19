@@ -13,7 +13,7 @@ Part of the **nodeapp WebApp family** — shared conventions live in [nodeapp-we
 - **CBETA composition** — record CBETA-style composition (`口*洛`, `木*(於-方)`); links to the [CBETA composition rules](https://cbeta.org/character-composition-rules).
 - **Code ↔ Unicode** — record the Taishō/CBETA glyph code (`T014461`) and the existing Unicode character it maps to (`𢤱`), with code point and an inline copy icon.
 - **Readings** — record the **Pinyin** (`lǒng`) and **Zhuyin / Bopomofo** (`ㄌㄨㄥˇ`) you were able to look up; both optional and free-form (multiple readings as `luò / lào`). A collapsible **Bopomofo keypad** (37 symbols + 4 tone marks) inserts straight into the field — an ordinary IME cannot type bare Bopomofo.
-- **Note** — a multi-line curator's note (source, look-alikes, what still needs checking). It stays in the registry and **never goes into the generated span**.
+- **Note** — a multi-line curator's note (source, look-alikes, what still needs checking). It stays in the registry and **never goes into the generated span**. A row of common-annotation chips (including today's date) inserts straight into the field.
 - **Code-only entries** — for glyphs that already exist in Unicode (no SVG needed, e.g. `&T014461;=𢤱`), register them without a `.svg` (keyed by `code`).
 - **Span generator** — `.glyph` mask span for glyph entries, or an annotated `<span data-code data-uni data-pinyin data-zhuyin>char</span>` for code-only entries; plus a one-click "copy character".
 - **Sort by added time** — every entry carries a `timestamp`; the list sorts newest-first (code-only entries included).

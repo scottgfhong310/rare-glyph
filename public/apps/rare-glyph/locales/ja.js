@@ -81,6 +81,7 @@ I18n.register('ja', {
   'note.label': '備考',
   'note.placeholder': '例：出典、どの字と紛らわしいか、まだ調べること…',
   'note.hint': '登録ファイルに残るだけ——生成される span には入りません',
+  'note.snips': 'よく使う註記（クリックで挿入）',
 
   /* 字形なし登録（.svg なし・既に Unicode にある） */
   'files.addCodeOnly': '字形なし追加',

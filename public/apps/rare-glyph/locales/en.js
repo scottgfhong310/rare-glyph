@@ -81,6 +81,7 @@ I18n.register('en', {
   'note.label': 'Note',
   'note.placeholder': 'e.g. source, which glyph it gets confused with, what still needs checking…',
   'note.hint': 'Stays in the registry only — it never goes into the generated span',
+  'note.snips': 'Common notes (click to insert)',
 
   /* Code-only entries (no .svg; already in Unicode) */
   'files.addCodeOnly': 'Add code-only',
