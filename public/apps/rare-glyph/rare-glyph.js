@@ -8,7 +8,7 @@
  * 條目（entry）有兩型，皆以 _key 為記憶體鍵：
  *   - 字形登錄（svg）：entry.file 非空（如 T011774.svg），_key = file
  *   - 無字形登錄（已有對應 Unicode 字、無 svg）：entry.file = ''，_key = 'code:'+code（未存檔暫為 'new:'+seq）
- * 每條目的可編輯資料放 state.metaByKey[_key] = { ids, cbeta, code, uni, pinyin, zhuyin }（記憶體唯一真相）。
+ * 每條目的可編輯資料放 state.metaByKey[_key] = { ids, cbeta, code, uni, pinyin, zhuyin, note }（記憶體唯一真相）。
  */
 (function () {
   'use strict';
@@ -17,11 +17,11 @@
   var THEME_KEY = 'rare-glyph-theme';
 
   var state = {
-    files: [],          // [{ file, hasSvg, stem, size, birthtime, ids, cbeta, code, uni, pinyin, zhuyin, _key }]
-    metaByKey: {},      // { key: { ids, cbeta, code, uni, pinyin, zhuyin } }
+    files: [],          // [{ file, hasSvg, stem, size, birthtime, ids, cbeta, code, uni, pinyin, zhuyin, note, _key }]
+    metaByKey: {},      // { key: { ids, cbeta, code, uni, pinyin, zhuyin, note } }
     current: null,      // 目前選中的 _key
     seq: 0,             // 未存檔無字形登錄的臨時 key 序號
-    filter: '',         // find 搜尋字串（小寫；跨 file/code/uni/ids/cbeta/pinyin/zhuyin 比對）
+    filter: '',         // find 搜尋字串（小寫；跨 file/code/uni/ids/cbeta/pinyin/zhuyin/note 比對）
     reviewFilter: '',   // 檢視篩選：'' | 'dirty'（更改＋新增）| 'nocode'（無字形登錄缺缺字碼）
     savedByKey: {}      // 已存檔基準（key → 持久化快照）；與 metaByKey 比對得 dirty
   };
@@ -71,7 +71,7 @@
   function syncTextareas() {
     if (!window.M) return;
     try { M.updateTextFields(); } catch (e) {}
-    ['ids-input', 'cbeta-input', 'span-output'].forEach(function (id) {
+    ['ids-input', 'cbeta-input', 'span-output', 'note-input'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el && M.textareaAutoResize) { try { M.textareaAutoResize(el); } catch (e) {} }
     });
@@ -124,7 +124,7 @@
     return null;
   }
   function metaOf(key) {
-    if (!state.metaByKey[key]) state.metaByKey[key] = { ids: '', cbeta: '', code: '', uni: '', pinyin: '', zhuyin: '', timestamp: '' };
+    if (!state.metaByKey[key]) state.metaByKey[key] = { ids: '', cbeta: '', code: '', uni: '', pinyin: '', zhuyin: '', note: '', timestamp: '' };
     return state.metaByKey[key];
   }
   function keyForServer(f) { return f.file ? f.file : ('code:' + (f.code || '')); }
@@ -134,7 +134,7 @@
   function entrySnap(key) {
     var f = entryByKey(key), m = metaOf(key);
     return { file: (f && f.file) || '', ids: m.ids || '', cbeta: m.cbeta || '', code: m.code || '', uni: m.uni || '',
-             pinyin: m.pinyin || '', zhuyin: m.zhuyin || '', ts: m.timestamp || '' };
+             pinyin: m.pinyin || '', zhuyin: m.zhuyin || '', note: m.note || '', ts: m.timestamp || '' };
   }
   function snapshotCurrent() {
     var snap = {};
@@ -240,6 +240,55 @@
       });
       box.appendChild(b);
     });
+  }
+
+  /* ---------- 注音鍵盤（點一下插進「國語注音」欄的游標處） ----------
+   * 符號 U+3105–U+3129 連續 37 個，直接由碼位產生——逐個列舉的話，哪天漏一個看起來與「本來就沒有」一樣。
+   * 聲調只給 ˊˇˋ˙ 四個：一聲不標（教育部慣例），列一顆 ˉ 反而會讓同一個音出現兩種寫法。 */
+  var ZY_FIRST = 0x3105, ZY_LAST = 0x3129;
+  var ZY_TONES = [
+    { ch: '\u02CA', key: 'zhuyin.t2' },   // ˊ 二聲
+    { ch: '\u02C7', key: 'zhuyin.t3' },   // ˇ 三聲
+    { ch: '\u02CB', key: 'zhuyin.t4' },   // ˋ 四聲
+    { ch: '\u02D9', key: 'zhuyin.t5' }    // ˙ 輕聲
+  ];
+
+  // ⚠️ 碼位順序不是注音表的順序：Unicode 把介音 ㄧㄨㄩ（3127–3129）排在韻母之後，
+  // 而大家背的是「聲母 → 介音 ㄧㄨㄩ → 韻母 ㄚ…ㄦ」。仍由碼位產生（不逐個列舉），只把那三個搬到 ㄚ 前面。
+  function zhuyinSymbols() {
+    var all = [];
+    for (var cp = ZY_FIRST; cp <= ZY_LAST; cp++) all.push(String.fromCodePoint(cp));
+    var medials = all.splice(all.indexOf('\u3127'), 3);          // ㄧㄨㄩ
+    var at = all.indexOf('\u311A');                              // ㄚ
+    return all.slice(0, at).concat(medials, all.slice(at));
+  }
+
+  function renderZhuyinPad() {
+    var symBox = document.getElementById('zhuyin-pad-symbols');
+    var toneBox = document.getElementById('zhuyin-pad-tones');
+    if (!symBox || !toneBox) return;
+    symBox.innerHTML = '';
+    toneBox.innerHTML = '';
+    function key(ch, cls, label) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'zy-key' + (cls ? ' ' + cls : '');
+      b.textContent = ch;
+      b.title = (label ? label + '　' : '') + cpHex(ch);
+      // mousedown 先於 blur：不讓按鈕搶走注音欄的游標，連按才接得下去
+      b.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      b.addEventListener('click', function () { insertZhuyin(ch); });
+      return b;
+    }
+    zhuyinSymbols().forEach(function (ch) { symBox.appendChild(key(ch)); });
+    ZY_TONES.forEach(function (e) { toneBox.appendChild(key(e.ch, 'zy-tone', t(e.key))); });
+  }
+
+  function insertZhuyin(ch) {
+    if (!state.current) return;
+    var inp = document.getElementById('zhuyin-input');
+    insertAtCaret(inp, ch, 0);
+    onZhuyinInput();
   }
 
   function renderCbetaPalette() {
@@ -377,6 +426,15 @@
     updateOutput();
   }
 
+  // 備註：策劃者的工作註記。⚠️ 它不進 span（見 DESIGN §7.5c），所以只要記進 state ＋ 更新未存檔提示
+  function onNoteInput() {
+    if (!state.current) return;
+    metaOf(state.current).note = document.getElementById('note-input').value.replace(/\r\n?/g, '\n').trim();
+    updateCell(state.current);   // 格上的備註記號需即時反映
+    refreshDirty();
+    syncTextareas();
+  }
+
   /* ---------- 缺字網格 ---------- */
   // 描述徽章通用規則：有 ids 顯示 ids，否則顯示 cbeta（皆空 → 佔位）
   function descBadge(meta) {
@@ -393,6 +451,12 @@
     if (!txt) return '';
     return '<span class="cell-read" title="' + escHtml(t(zh ? 'zhuyin.label' : 'pinyin.label')) + '">' +
       escHtml(txt) + '</span>';
+  }
+
+  // 備註記號：有備註才出現一顆小圖示（備註是少數條目才有的東西，恆佔位等於沒有記號）
+  function noteTag(meta) {
+    return (meta.note || '').trim()
+      ? '<i class="material-icons cell-note" title="' + escHtml(t('note.label')) + '">edit_note</i>' : '';
   }
 
   // 重複檢視時，格上標示「哪個欄位撞了」
@@ -412,7 +476,7 @@
           '\')" role="img" aria-label="' + escHtml('缺字 ' + stem) + '"></span>' +
         (uni ? '<span class="cell-uni" title="對應 Unicode 字">' + escHtml(uni) + '</span>' : '') +
         descBadge(meta) + readBadge(meta) +
-        '<span class="cell-name">' + escHtml(stem) + '</span>' + dupTag(f);
+        '<span class="cell-name">' + escHtml(stem) + '</span>' + noteTag(meta) + dupTag(f);
     }
     // 無字形登錄
     var u = meta.uni || '';
@@ -420,7 +484,7 @@
         ? '<span class="cell-char">' + escHtml(u) + '</span>'
         : '<span class="cell-char cell-char-empty">？</span>') +
       descBadge(meta) + readBadge(meta) +
-      '<span class="cell-name">' + escHtml(meta.code || t('files.unnamed')) + '</span>' +
+      '<span class="cell-name">' + escHtml(meta.code || t('files.unnamed')) + '</span>' + noteTag(meta) +
       '<span class="cell-tag">' + escHtml(t('files.codeOnlyTag')) + '</span>' + dupTag(f);
   }
 
@@ -452,7 +516,7 @@
     return { dupKeys: dupKeys, fieldOf: fieldOf, groupOf: groupOf };
   }
 
-  // find：跨 file / code(檔名) / code(缺字碼) / uni / ids / cbeta / 讀音 的不分欄位子字串比對
+  // find：跨 file / code(檔名) / code(缺字碼) / uni / ids / cbeta / 讀音 / 備註 的不分欄位子字串比對
   function matchEntry(f) {
     // 檢視篩選（predicate）：更改＋新增 / 無字形登錄缺缺字碼 / 重複
     if (state.reviewFilter === 'dirty' && !entryDirty(f._key)) return false;
@@ -462,7 +526,7 @@
     if (!state.filter) return true;
     if (String(f._key).indexOf('new:') === 0) return true;  // 未存檔新條目一律顯示（不被文字過濾掉）
     var m = metaOf(f._key);
-    var hay = [f.file || '', Lib.codeFromFile(f.file || ''), m.code, m.uni, m.ids, m.cbeta, m.pinyin, m.zhuyin]
+    var hay = [f.file || '', Lib.codeFromFile(f.file || ''), m.code, m.uni, m.ids, m.cbeta, m.pinyin, m.zhuyin, m.note]
       .join('\n').toLowerCase();
     return hay.indexOf(state.filter) >= 0;
   }
@@ -546,6 +610,7 @@
     document.getElementById('uni-input').value = meta.uni;
     document.getElementById('pinyin-input').value = meta.pinyin || '';
     document.getElementById('zhuyin-input').value = meta.zhuyin || '';
+    document.getElementById('note-input').value = meta.note || '';
 
     var res = Lib.parseIds(meta.ids);
     renderValidate(res);
@@ -652,7 +717,7 @@
     var nextCode = Lib.suggestCode(allCodes());   // 預設帶 yyyyMMdd-###（當天下一號），可改寫
     var key = 'new:' + (++state.seq);
     state.files.unshift({ file: '', hasSvg: false, stem: '', size: 0, birthtime: 0, _key: key });
-    state.metaByKey[key] = { ids: '', cbeta: '', code: nextCode, uni: '', pinyin: '', zhuyin: '', timestamp: Lib.timestamp() };
+    state.metaByKey[key] = { ids: '', cbeta: '', code: nextCode, uni: '', pinyin: '', zhuyin: '', note: '', timestamp: Lib.timestamp() };
     renderGrid();
     selectEntry(key);
     scrollToSelected();                                        // Glyphs 清單捲到新條目位置
@@ -718,15 +783,15 @@
         f._key = keyForServer(f);
         newMeta[f._key] = prevMeta[f._key] ||
           { ids: f.ids || '', cbeta: f.cbeta || '', code: f.code || '', uni: f.uni || '',
-            pinyin: f.pinyin || '', zhuyin: f.zhuyin || '', timestamp: f.timestamp || '' };
+            pinyin: f.pinyin || '', zhuyin: f.zhuyin || '', note: f.note || '', timestamp: f.timestamp || '' };
         saved[f._key] = { file: f.file || '', ids: f.ids || '', cbeta: f.cbeta || '', code: f.code || '', uni: f.uni || '',
-                          pinyin: f.pinyin || '', zhuyin: f.zhuyin || '', ts: f.timestamp || '' };
+                          pinyin: f.pinyin || '', zhuyin: f.zhuyin || '', note: f.note || '', ts: f.timestamp || '' };
         newFiles.push(f);
       });
       // 保留尚未存檔的無字形登錄（'new:' 鍵；upload/reload 不致遺失）；不進 saved → 標記為 dirty
       prevFiles.forEach(function (pf) {
         if (String(pf._key).indexOf('new:') !== 0) return;
-        newMeta[pf._key] = prevMeta[pf._key] || { ids: '', cbeta: '', code: '', uni: '', pinyin: '', zhuyin: '', timestamp: '' };
+        newMeta[pf._key] = prevMeta[pf._key] || { ids: '', cbeta: '', code: '', uni: '', pinyin: '', zhuyin: '', note: '', timestamp: '' };
         newFiles.unshift(pf);
       });
       state.metaByKey = newMeta;
@@ -767,6 +832,7 @@
         uni: (m.uni || '').trim(),
         pinyin: (m.pinyin || '').trim(),
         zhuyin: (m.zhuyin || '').trim(),
+        note: (m.note || '').trim(),
         timestamp: (m.timestamp || '').trim()   // 缺則後端視為此刻加入
       };
     });
@@ -885,6 +951,7 @@
   function relocalizeDynamic() {
     renderPalette();
     renderCbetaPalette();
+    renderZhuyinPad();
     renderQuickCopy();
     renderGrid();
     refreshDirty();   // 重設存檔鍵 title（I18n.apply 會把 data-i18n-title 蓋回非 dirty 版）
@@ -915,6 +982,7 @@
     document.getElementById('uni-input').addEventListener('input', onUniInput);
     document.getElementById('pinyin-input').addEventListener('input', onPinyinInput);
     document.getElementById('zhuyin-input').addEventListener('input', onZhuyinInput);
+    document.getElementById('note-input').addEventListener('input', onNoteInput);
 
     document.getElementById('ids-copy').addEventListener('click', function () {
       copyText(document.getElementById('ids-input').value, t('toast.idsCopied'));
@@ -966,6 +1034,7 @@
     window.I18n.apply(document);
     renderPalette();
     renderCbetaPalette();
+    renderZhuyinPad();
     renderQuickCopy();
     bind();
     initDragDrop();

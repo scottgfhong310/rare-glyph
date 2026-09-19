@@ -22,7 +22,7 @@ I18n.register('en', {
   'files.loading': 'Loading…',
   'files.count': '{n} glyph(s)',
   'files.matchCount': '{n} / {total} match',
-  'files.findPh': 'Find by code / char / reading / IDS / CBETA / filename…',
+  'files.findPh': 'Find by code / char / reading / note / IDS / CBETA / filename…',
   'review.label': 'Review',
   'review.dirty': 'Unsaved',
   'review.nocode': 'Missing code',
@@ -70,6 +70,17 @@ I18n.register('en', {
   'pinyin.placeholder': 'e.g. luò (separate multiple with /)',
   'zhuyin.label': 'Zhuyin (Bopomofo)',
   'zhuyin.placeholder': 'e.g. ㄌㄨㄛˋ (separate multiple with /)',
+  'zhuyin.pad': 'Bopomofo keypad (click to insert into the field above)',
+  'zhuyin.padHint': 'First tone is left unmarked (MOE convention); use your keyboard’s delete to fix a slip',
+  'zhuyin.t2': '2nd tone',
+  'zhuyin.t3': '3rd tone',
+  'zhuyin.t4': '4th tone',
+  'zhuyin.t5': 'neutral tone',
+
+  /* Note */
+  'note.label': 'Note',
+  'note.placeholder': 'e.g. source, which glyph it gets confused with, what still needs checking…',
+  'note.hint': 'Stays in the registry only — it never goes into the generated span',
 
   /* Code-only entries (no .svg; already in Unicode) */
   'files.addCodeOnly': 'Add code-only',

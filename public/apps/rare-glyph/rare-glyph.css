@@ -425,6 +425,41 @@ main { padding: 8px 0 16px; }
 .detail-codeuni .input-field label { white-space: nowrap; }
 .detail-codeuni input[type="text"] { color: var(--text); }
 
+/* 注音鍵盤：收合式，展開後是一排小方鍵；點一下插進「國語注音」欄 */
+.zhuyin-pad { margin: 2px 0 10px; }
+.zhuyin-pad > summary {
+  font-size: .74rem; color: var(--muted); cursor: pointer;
+  list-style: none; display: inline-flex; align-items: center; gap: 4px;
+}
+.zhuyin-pad > summary::-webkit-details-marker { display: none; }
+.zhuyin-pad > summary::before { content: "▸"; display: inline-block; transition: transform .15s; }
+.zhuyin-pad[open] > summary::before { transform: rotate(90deg); }
+.zhuyin-pad > summary:hover { color: var(--accent); }
+.zy-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.zy-key {
+  min-width: 1.9em; padding: 2px 0;
+  font-size: .95rem; line-height: 1.4;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface); color: var(--text);
+  cursor: pointer; transition: border-color .15s, background .15s, transform .1s;
+}
+.zy-key:hover { border-color: var(--accent); transform: translateY(-1px); }
+.zy-key:active { transform: translateY(0); }
+/* 自繪按鈕不吃 Materialize 的 teal 互動底色（同 .idc-btn／.qc-btn 那一條） */
+.zy-key:hover, .zy-key:focus, .zy-key:active { background-color: var(--surface); }
+[data-theme="dark"] .zy-key { color: #fff; }
+/* 聲調符號本身很小（ˊˇˋ˙），照符號鍵的尺寸畫在深色上幾乎看不見 ⇒ 放大並加寬 */
+.zy-tones { margin-top: 8px; }
+.zy-tones .zy-key { color: var(--accent); font-size: 1.5rem; min-width: 2.4em; line-height: 1.1; }
+[data-theme="dark"] .zy-tones .zy-key { color: var(--accent); }
+.zy-hint { font-size: .68rem; color: var(--muted); margin-top: 6px; }
+
+/* 備註：多行，只留在登錄檔裡（不進 span） */
+.detail-note { display: block; }
+.detail-note .input-field { margin: 1.4rem 0 .4rem; }
+.detail-note #note-input { color: var(--text); font-size: .9rem; line-height: 1.5; }
+.detail-note .input-field label { white-space: nowrap; }
+
 /* 讀音兩欄（拼音 / 國語注音）：與缺字碼區同一套欄位語言，只縮小上方間距 */
 .detail-reading { display: block; }
 .detail-reading .field-label { margin: 10px 0 0; }
@@ -448,6 +483,8 @@ main { padding: 8px 0 16px; }
 .cell-uni { font-size: .8rem; line-height: 1; color: var(--accent); }
 /* 格上的讀音列：注音優先、其次拼音；兩者皆空時整列不出現（與恆佔位的 .cell-ids 不同） */
 .glyph-cell .cell-read { font-size: .62rem; line-height: 1.2; color: var(--muted); max-width: 100%; word-break: break-word; }
+/* 有備註才出現的小記號（同樣不佔位） */
+.glyph-cell .cell-note { font-size: 15px; line-height: 1; color: var(--muted); opacity: .75; }
 .detail-meta { min-width: 0; }
 .detail-code { font-size: 1rem; font-weight: 600; word-break: break-all; }
 .detail-file { font-size: .76rem; color: var(--muted); word-break: break-all; }

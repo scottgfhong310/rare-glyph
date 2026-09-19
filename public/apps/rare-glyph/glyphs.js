@@ -7,6 +7,7 @@
  *   uni  ：該缺字對應的既有 Unicode 字（如 𢤱），可空
  *   pinyin：該字查得到的漢語拼音（如 luò；多音以 / 分隔），可空
  *   zhuyin：該字查得到的國語注音符號（如 ㄌㄨㄛˋ），可空
+ *   note  ：備註（策劃者的工作註記，可多行；**刻意不輸出到 span**），可空
  *   timestamp：加入時間 yyyyMMddHHmmss（清單依此降冪排序；無字形登錄亦可排序）
  */
 window.RG_GLYPHS = [
@@ -18,6 +19,7 @@ window.RG_GLYPHS = [
     "uni": "",
     "pinyin": "",
     "zhuyin": "",
+    "note": "",
     "timestamp": "20241108095056"
   },
   {
@@ -28,6 +30,7 @@ window.RG_GLYPHS = [
     "uni": "",
     "pinyin": "",
     "zhuyin": "",
+    "note": "",
     "timestamp": "20241107083904"
   },
   {
@@ -38,6 +41,7 @@ window.RG_GLYPHS = [
     "uni": "",
     "pinyin": "",
     "zhuyin": "",
+    "note": "",
     "timestamp": "20241111154709"
   },
   {
@@ -48,6 +52,7 @@ window.RG_GLYPHS = [
     "uni": "",
     "pinyin": "",
     "zhuyin": "",
+    "note": "",
     "timestamp": "20250827185546"
   },
   {
@@ -58,6 +63,7 @@ window.RG_GLYPHS = [
     "uni": "𢤱",
     "pinyin": "",
     "zhuyin": "",
+    "note": "",
     "timestamp": "20260627220102"
   },
   {
@@ -68,6 +74,7 @@ window.RG_GLYPHS = [
     "uni": "",
     "pinyin": "",
     "zhuyin": "",
+    "note": "",
     "timestamp": "20260627202824"
   }
 ];

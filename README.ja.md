@@ -2,7 +2,7 @@
 
 [English](./README.md) · [繁體中文](./README.zh-Hant.md)
 
-**仏典・古典籍に現れる稀少文字／欠字（缺字）**を管理する策劃ツール。共有の欠字 SVG 群を管理し、各字を記述し（標準 Unicode IDS、CBETA 組字式、大正蔵/CBETA 欠字コード、読み、既に存在すれば対応 Unicode 文字）、`markdown-library` / `markdown-reader` の文書にそのまま貼れる家族 `.glyph` `<span>` マークアップを生成します。
+**仏典・古典籍に現れる稀少文字／欠字（缺字）**を管理する策劃ツール。共有の欠字 SVG 群を管理し、各字を記述し（標準 Unicode IDS、CBETA 組字式、大正蔵/CBETA 欠字コード、読み、備考、既に存在すれば対応 Unicode 文字）、`markdown-library` / `markdown-reader` の文書にそのまま貼れる家族 `.glyph` `<span>` マークアップを生成します。
 
 **nodeapp WebApp ファミリー**の一員。共通規約と手順は [nodeapp-webapp-family](https://github.com/scottgfhong310/nodeapp-webapp-family)（`DESIGN_GUIDELINES.md`、`WORKFLOW.md`）。Path A（GitHub-first）で作成。設計詳細は [DESIGN.md](./DESIGN.md)。
 
@@ -12,11 +12,12 @@
 - **IDS Builder** — 16 個の漢字構成記述文字（U+2FF0–2FFF）パレット（項数表示）、コピー可能な `<textarea>`、**リアルタイム検証**（項数・余分文字）、コードポイント付き**構造ツリー**。
 - **CBETA 組字式** — CBETA 風組字式（`口*洛`、`木*(於-方)`）を記録；[CBETA 組字規則](https://cbeta.org/character-composition-rules)へのリンク。
 - **欠字コード ↔ Unicode** — 大正蔵/CBETA 欠字コード（`T014461`）と対応する既存 Unicode 文字（`𢤱`）を記録、コードポイントとインラインコピーアイコン付き。
-- **読み** — 調べられた**ピンイン**（`lǒng`）と**注音符号**（`ㄌㄨㄥˇ`）を記録；どちらも空可・自由記述（複数の読みは `luò / lào`）。
+- **読み** — 調べられた**ピンイン**（`lǒng`）と**注音符号**（`ㄌㄨㄥˇ`）を記録；どちらも空可・自由記述（複数の読みは `luò / lào`）。**注音キーパッド**（37 記号＋4 声調、クリックで欄に挿入）付き——通常の IME では裸の注音符号が打てないため。
+- **備考** — 複数行のキュレーターメモ（出典、紛らわしい字、未確認事項）。登録ファイルに残るだけで、**生成される span には入りません**。
 - **字形なし登録** — 既に Unicode にある（SVG 不要、例 `&T014461;=𢤱`）字は `.svg` なしで登録可（`code` がキー）。
 - **span 生成** — 字形登録は `.glyph` mask span、字形なし登録は注記付き `<span data-code data-uni data-pinyin data-zhuyin>字</span>`、さらに「対応字をコピー」。
 - **追加時刻でソート** — 各登録に `timestamp`、一覧は新しい順（字形なし登録も含む）。
-- **find** — 1 つの検索ボックスで `code` / `uni` / `ids` / `cbeta` / 読み / ファイル名を横断フィルタ。
+- **find** — 1 つの検索ボックスで `code` / `uni` / `ids` / `cbeta` / 読み / 備考 / ファイル名を横断フィルタ。
 - **ダウンロード** — 元 SVG、またはクライアント側で生成する**白地に黒字の PNG**。
 - 三言語 UI（`zh-Hant` / `en` / `ja`）、ライト／ダーク（既定はダーク）。
 
@@ -40,7 +41,7 @@ rare-glyph/
 └─ public/
    ├─ apps/rare-glyph/             # フロントエンド（/apps/rare-glyph/ で配信）
    │  ├─ index.html · rare-glyph.css · rare-glyph.js · rare-glyph-lib.js
-   │  ├─ glyphs.js                 # 登録：window.RG_GLYPHS = [{file, ids, cbeta, code, uni, pinyin, zhuyin, timestamp}]
+   │  ├─ glyphs.js                 # 登録：window.RG_GLYPHS = [{file, ids, cbeta, code, uni, pinyin, zhuyin, note, timestamp}]
    │  ├─ i18n.js · locales/{zh-Hant,en,ja}.js
    │  ├─ side-tool.css · thinking-dot.css · materialize-dark.css
    │  └─ fonts/                    # IDC フォールバック subset（U+2FF0–2FFF + U+31EF）⿼⿽⿾⿿ 用；bundled BabelStone Han（APL）
@@ -63,7 +64,7 @@ rare-glyph/
 | GET | `/api/rare-glyph/list` | コーパス `.svg` ＋ 字形なし登録を列挙、登録 meta を統合；`timestamp` 降順 |
 | POST | `/api/rare-glyph/upload` | `.svg` をアップロード（multipart `myFiles`、最大 20、同名上書き） |
 | POST | `/api/rare-glyph/delete` | `svgs/<file>` を削除（先に `.bak`）— body `{ file }` |
-| POST | `/api/rare-glyph/registry` | `glyphs.js` に書き戻し（先に `.bak`）— body `{ entries: [{file, ids, cbeta, code, uni, pinyin, zhuyin, timestamp}] }` |
+| POST | `/api/rare-glyph/registry` | `glyphs.js` に書き戻し（先に `.bak`）— body `{ entries: [{file, ids, cbeta, code, uni, pinyin, zhuyin, note, timestamp}] }` |
 
 すべての応答は `{ ok: boolean, ... }` 形式。エラーは `{ ok: false, error }`。
 
@@ -94,6 +95,7 @@ svgUrl(file) / downloadUrl(file) / timestamp(date) / formatSize(bytes)
   "uni":   "𢤱",            // 対応する既存 Unicode 文字、空可
   "pinyin": "lǒng",         // 調べられたピンイン（複数は "luò / lào"）、空可
   "zhuyin": "ㄌㄨㄥˇ",       // 調べられた注音符号、空可
+  "note":   "",             // 備考（複数行のメモ；span には入らない）、空可
   "timestamp": "20260627220102"   // 追加時刻 yyyyMMddHHmmss（一覧はこれで降順）
 }
 
@@ -103,7 +105,7 @@ svgUrl(file) / downloadUrl(file) / timestamp(date) / formatSize(bytes)
   "files": [
     { "file":"T011774.svg", "hasSvg":true, "stem":"T011774", "size":7501, "mtime":..., "birthtime":...,
       "timestamp":"20260627220102", "ids":"", "cbeta":"", "code":"T014461", "uni":"𢤱",
-      "pinyin":"lǒng", "zhuyin":"ㄌㄨㄥˇ" }
+      "pinyin":"lǒng", "zhuyin":"ㄌㄨㄥˇ", "note":"" }
   ]
 }
 ```

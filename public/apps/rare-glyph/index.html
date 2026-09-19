@@ -244,6 +244,23 @@
                      data-i18n-placeholder="zhuyin.placeholder" placeholder="例：ㄌㄨㄛˋ（多音以 / 分隔）">
               <label for="zhuyin-input" data-i18n="zhuyin.label">國語注音</label>
             </div>
+            <!-- 注音鍵盤：點一下插進上面那一欄的游標處（收合式，預設收起來） -->
+            <details class="zhuyin-pad">
+              <summary data-i18n="zhuyin.pad">注音鍵盤（點一下插入上面那一欄）</summary>
+              <div class="zy-row" id="zhuyin-pad-symbols"></div>
+              <div class="zy-row zy-tones" id="zhuyin-pad-tones"></div>
+              <div class="zy-hint" data-i18n="zhuyin.padHint">一聲不標（教育部慣例）；打錯用鍵盤的 delete 就好</div>
+            </details>
+          </div>
+
+          <!-- 備註：策劃者的工作註記，可多行；刻意不輸出到 span -->
+          <div class="detail-note">
+            <div class="input-field">
+              <textarea id="note-input" class="materialize-textarea" spellcheck="false"
+                        data-i18n-placeholder="note.placeholder" placeholder="例：出處、與哪個字混用、還要再查什麼…"></textarea>
+              <label for="note-input" data-i18n="note.label">備註</label>
+              <span class="helper-text" data-i18n="note.hint">只留在登錄檔裡，不會進到產生的 span</span>
+            </div>
           </div>
 
           <div class="input-field span-field">

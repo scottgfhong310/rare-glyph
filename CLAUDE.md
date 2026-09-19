@@ -1,7 +1,7 @@
 # rare-glyph — Session context
 
 **經典中罕見字管理 · IDS Builder**：策劃佛典／經典中的罕見字（缺字）SVG 語料，
-描述每個缺字（標準 Unicode IDS ⿰⿱… U+2FF0–2FFF、CBETA 組字式、大正藏/CBETA 缺字碼、對應 Unicode 字、讀音），
+描述每個缺字（標準 Unicode IDS ⿰⿱… U+2FF0–2FFF、CBETA 組字式、大正藏/CBETA 缺字碼、對應 Unicode 字、讀音、備註），
 並產生家族 `.glyph` `<span>` 標記，貼進 `markdown-library` / `markdown-reader` 文件。
 以 Path A（GitHub-first）建立。完整設計見 `DESIGN.md`。
 
@@ -15,7 +15,7 @@ app.js                              # Express 入口：port 3000；/ → 302 /ap
 routes/rare-glyph.js                # GET /list + POST /upload、/delete、/registry（全 {ok}）
 public/apps/rare-glyph/             # 前端（服務於 /apps/rare-glyph/）
 ├─ index.html · rare-glyph.css · rare-glyph.js · rare-glyph-lib.js   # 四件式
-├─ glyphs.js                        # 登錄（window.RG_GLYPHS = [{file, ids, cbeta, code, uni, pinyin, zhuyin, timestamp}]；<script> 載入免 fetch）
+├─ glyphs.js                        # 登錄（window.RG_GLYPHS = [{file, ids, cbeta, code, uni, pinyin, zhuyin, note, timestamp}]；<script> 載入免 fetch）
 ├─ i18n.js · locales/{zh-Hant,en,ja}.js
 ├─ side-tool.css · side-tool.js                    # §5.5〔正統〕.side-tools flex 容器版
 ├─ thinking-dot.css                 # 家族共用載入點 utility（權威版＝獨立 repo thinking-dot；byte-identical 同步；載入點預設 2026-07-19 隨權威統一 14px→27px/2.1s）
@@ -77,7 +77,7 @@ bash scripts/sync-copies.sh
 - **`.glyph` 渲染慣例**（與 markdown-library/viewer.css 相容）：`mask: var(--g) center/contain` +
   `background-color: currentColor`，1em 見方、隨內文色 → 黑底 512 SVG 在 dark/列印皆正確（`<img>` 在 dark 會看不見）。
   本 app 在 `rare-glyph.css` 自帶 `.glyph` 規則（非 zero-md shadow DOM）。
-- **兩型條目 + 以 key 為中心的 state**：字形登錄（`file` 非空、鍵＝檔名）與**無字形登錄**（已有對應 Unicode 字、`file` 空、鍵＝`'code:'+code`，未存檔暫為 `'new:'+seq`）。前端 `state.metaByKey[_key] = {ids,cbeta,code,uni,pinyin,zhuyin,timestamp}` 為編輯中唯一真相；`loadFiles` 保留記憶體未存檔編輯與未存檔的 `new:` 條目。
+- **兩型條目 + 以 key 為中心的 state**：字形登錄（`file` 非空、鍵＝檔名）與**無字形登錄**（已有對應 Unicode 字、`file` 空、鍵＝`'code:'+code`，未存檔暫為 `'new:'+seq`）。前端 `state.metaByKey[_key] = {ids,cbeta,code,uni,pinyin,zhuyin,note,timestamp}` 為編輯中唯一真相；`loadFiles` 保留記憶體未存檔編輯與未存檔的 `new:` 條目。
 - **產生的 span（依型態）**：字形登錄 `buildSpan({file,stem,ids,cbeta,code,uni,pinyin,zhuyin})` →
   `<span class="glyph" style="--g:url('/lib/Typeface/svgs/<file>')" role="img" aria-label="缺字 <stem>" data-ids data-cbeta data-code data-uni data-pinyin data-zhuyin>`（屬性按有值才加）；
   無字形登錄 `buildCharSpan({code,uni,pinyin,zhuyin})` → `<span data-code data-uni data-pinyin data-zhuyin>對應字</span>`，另提供「複製對應字」純字。`stem` = 檔名去 `.svg`（與 `code` 缺字碼區分）。
@@ -91,10 +91,17 @@ bash scripts/sync-copies.sh
   自由文字不驗格式（多音寫成 `luò / lào`）。輸出為 `data-pinyin` / `data-zhuyin`，並進 find。
   網格格上多一列讀音——**有注音顯示注音、否則顯示拼音；兩者皆空整列不出現**（與恆佔位的 `.cell-ids` 刻意不同）。
   ⚠️ **重複檢視刻意不掃這兩欄**：同音字本來就成群，掃了會把一整批正常資料標成「重複」。
-- **find**：純前端跨欄位（file/stem/code/uni/ids/cbeta/pinyin/zhuyin）不分大小寫子字串過濾，只過濾顯示。
+  **注音欄下附收合式注音鍵盤**〔2026-09-19〕：37 符號（由碼位 U+3105–U+3129 產生，**但介音 ㄧㄨㄩ 搬到 ㄚ 前面**
+  ——Unicode 的順序不是注音表的順序）＋ 4 個聲調（**一聲不標**）；點一下**插進游標處**（不是複製），
+  `mousedown` 先 `preventDefault()` 免得按鈕搶走游標。
+- **備註欄 `note`**〔2026-09-19〕：策劃者的工作註記，**多行**（唯一允許換行的欄位，CRLF 正規化成 LF）。
+  ⚠️⚠️ **刻意不輸出到 span**——其他欄位描述「那個字」，備註描述「這份工作」，塞進 `data-note`
+  等於把內部筆記散布到每一份貼出去的文件（同家族 `meta_i18n` 的 `fd_note`：權威在登錄處、不隨產物走）。
+  有備註的格子出現一顆 `edit_note` 小圖示（沒有就不出現）；進 find。
+- **find**：純前端跨欄位（file/stem/code/uni/ids/cbeta/pinyin/zhuyin/note）不分大小寫子字串過濾，只過濾顯示。
 - **後端安全**（canon §8）：操作目標固定（svgs/ 目錄 / glyphs.js）；檔名 sanitize（basename===原值、非 . / ..、
   不含 `/ \ \0`、**擋 `" ' < > &` 與控制字元**、副檔名須 `.svg`；允許全形描述字元 ＊／＠（） 與 CJK）；落點檢查 `startsWith(SVGS_DIR+sep)`；
-  registry 每筆需 `file` 或 `code` 其一、file/code 各自唯一、ids/cbeta/code/uni/pinyin/zhuyin 擋 `\0`／控制字元、timestamp `^\d{0,14}$`；覆寫/刪除前 `.bak`；以 `JSON.stringify` 重寫（字串安全跳脫）。
+  registry 每筆需 `file` 或 `code` 其一、file/code 各自唯一、ids/cbeta/code/uni/pinyin/zhuyin 擋 `\0`／控制字元、**`note` 放行 `\n`／`\t`、其餘控制字元照擋**、timestamp `^\d{0,14}$`；覆寫/刪除前 `.bak`；以 `JSON.stringify` 重寫（字串安全跳脫）。
 - **主題**：CSS 變數 light/dark，預設 dark；防閃爍開機腳本同時切 `data-theme` 與 `dark-mode`/`light-mode` class
   （materialize-dark.css 需要，見家族 §5.1）；`--mz-*` 映射到 `--accent`；另以 `html.dark-mode body` 同特異度規則
   把頁面底色拉回 app token（蓋過 materialize-dark 的 #121212）。

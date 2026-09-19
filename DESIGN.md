@@ -28,7 +28,7 @@
 沿用家族理念（zero-build / CDN-first、薄後端純前端核心、可嵌入 lib、三語標配、安全內建）。本 app 額外的取捨：
 
 - **以「缺字語料的擁有者工具」自我定位**：它是 `markdown-library` 等閱讀器的**伴生編輯工具**，產物（span / glyphs.js）餵回那些 app。
-- **資料與程式分離**：字形語料在共用 `/lib/Typeface/svgs/`；描述資料（IDS/CBETA/code/uni/讀音/timestamp）在 `glyphs.js` 登錄。
+- **資料與程式分離**：字形語料在共用 `/lib/Typeface/svgs/`；描述資料（IDS/CBETA/code/uni/讀音/備註/timestamp）在 `glyphs.js` 登錄。
 - **記憶體為編輯中的唯一真相**：所有編輯先進記憶體，按「存檔」才寫回 `glyphs.js`（覆寫前 `.bak`）。
 
 ---
@@ -91,6 +91,7 @@ rare-glyph/
   "uni":   "𢤱",            // 對應的既有 Unicode 字，可空
   "pinyin": "lǒng",         // 查得到的漢語拼音（多音以 / 分隔），可空
   "zhuyin": "ㄌㄨㄥˇ",       // 查得到的國語注音符號（多音以 / 分隔），可空
+  "note":   "",             // 備註（策劃者的工作註記，可多行；**不進 span**），可空
   "timestamp": "20260627220102"  // 加入時間 yyyyMMddHHmmss
 }
 ```
@@ -107,7 +108,7 @@ rare-glyph/
 { "ok": true, "files": [
   { "file":"T011774.svg", "hasSvg":true, "stem":"T011774", "size":7501, "mtime":..., "birthtime":...,
     "timestamp":"20260627220102", "ids":"", "cbeta":"", "code":"T014461", "uni":"𢤱",
-    "pinyin":"lǒng", "zhuyin":"ㄌㄨㄥˇ" }
+    "pinyin":"lǒng", "zhuyin":"ㄌㄨㄥˇ", "note":"" }
 ] }
 ```
 
@@ -117,7 +118,7 @@ rare-glyph/
 ### 5.3 前端記憶體狀態（key 為中心）
 
 每條目有穩定 `_key`：svg＝檔名、code-only＝`'code:'+code`（未存檔暫為 `'new:'+seq`）。
-`state.metaByKey[_key] = { ids, cbeta, code, uni, pinyin, zhuyin, timestamp }` 為編輯中唯一真相；
+`state.metaByKey[_key] = { ids, cbeta, code, uni, pinyin, zhuyin, note, timestamp }` 為編輯中唯一真相；
 `loadFiles` 重載時，已在記憶體者保留其（可能未存檔的）編輯，未存檔的 `'new:'` 無字形登錄也保留不致遺失。
 
 ---
@@ -129,7 +130,7 @@ rare-glyph/
 | GET | `/api/rare-glyph/list` | 列 `svgs/*.svg` + 併入登錄 meta + 併入 code-only 登錄；依 timestamp 降冪 |
 | POST | `/api/rare-glyph/upload` | 上傳 `.svg` 到 svgs/（multipart `myFiles`、≤20、同名覆寫） |
 | POST | `/api/rare-glyph/delete` | 刪除 `svgs/<file>`（覆寫/刪除前 `.bak`）body `{ file }` |
-| POST | `/api/rare-glyph/registry` | 重寫 `glyphs.js`（`.bak`）body `{ entries:[{file,ids,cbeta,code,uni,pinyin,zhuyin,timestamp}] }` |
+| POST | `/api/rare-glyph/registry` | 重寫 `glyphs.js`（`.bak`）body `{ entries:[{file,ids,cbeta,code,uni,pinyin,zhuyin,note,timestamp}] }` |
 
 全部回 `{ ok }`；錯誤 `{ ok:false, error }`。
 
@@ -181,6 +182,31 @@ rare-glyph/
   （與恆佔位的 `.cell-ids` 刻意不同——讀音是少數條目才有的東西，恆佔位會讓每一格都多一條空白）。
 - ⚠️ **重複檢視（`review.dup`）刻意不掃這兩欄**：同音字本來就成群，納入會把一整批正常資料標成「重複」。
 
+#### 注音鍵盤
+
+注音符號用一般輸入法打不出來（IME 會想幫你選字），所以「國語注音」欄下面附一個**收合式鍵盤**：
+**37 個符號 ＋ 4 個聲調**，點一下**插進上面那一欄的游標處**（不是複製到剪貼簿——那會洗掉你原本剪貼簿裡的東西，
+而且還要多按一次貼上）。
+
+- **符號由碼位產生**（U+3105–U+3129 連續 37 個），不逐個列舉——列舉的話哪天漏一個，畫面上與「本來就沒有這個符號」一模一樣。
+  ⚠️ **但顯示順序不照碼位**：Unicode 把介音 `ㄧㄨㄩ` 排在韻母之後，而大家背的是「聲母 → ㄧㄨㄩ → ㄚ…ㄦ」，
+  故產生後把那三個搬到 `ㄚ` 前面。
+- **聲調只給 `ˊ ˇ ˋ ˙` 四個**：一聲不標（教育部慣例）。多給一顆 `ˉ` 會讓同一個音出現兩種寫法。
+- 聲調鍵**刻意畫得比符號鍵大**——`ˊˇˋ˙` 本身就是很小的記號，照符號鍵的尺寸畫在深色上幾乎看不見。
+- 鍵上 `mousedown` 先 `preventDefault()`，**不讓按鈕搶走輸入框的游標**，所以連點好幾個接得下去。
+
+### 7.5c 備註（`note`）
+
+策劃者的工作註記：出處、與哪個字混用、還要再查什麼。**多行**（唯一允許換行的欄位）。
+
+- ⚠️⚠️ **刻意不輸出到 span**。其他欄位都是**關於那個字**的描述（身分／寫法／讀音），下游文件用得到；
+  備註是**關於這份策劃工作**的話，把它塞進 `data-note` 等於把內部筆記散布到每一份貼出去的文件裡。
+  這與家族 `meta_i18n` 的先例同形：`fd_note` 權威在 DB、**不隨產物走到 app**。
+- 有備註的格子右下角出現一顆小圖示（`edit_note`）；**沒有備註就不出現**（同讀音列的理由）。
+- 進 find 的比對欄位——「那個字我記得寫過什麼」是真的會發生的查法。
+- 後端守衛與其他欄位**刻意不同**：`\n` 與 `\t` 放行、其餘控制字元照擋，`\r\n` 一律正規化成 `\n`
+  （不然同一段文字存兩次會得到兩種位元組）。
+
 ### 7.6 產生的 span（依型態）
 
 - **字形登錄**：`.glyph` mask span
@@ -194,7 +220,7 @@ rare-glyph/
 
 ### 7.8 find（跨欄位搜尋）
 
-單一搜尋框，**不分欄位**對 `file` / `stem` / `code` / `uni` / `ids` / `cbeta` / `pinyin` / `zhuyin` 做不分大小寫子字串比對，即時過濾網格；計數列顯示「n / total」；清除鈕還原。只過濾顯示，不影響選取與資料。
+單一搜尋框，**不分欄位**對 `file` / `stem` / `code` / `uni` / `ids` / `cbeta` / `pinyin` / `zhuyin` / `note` 做不分大小寫子字串比對，即時過濾網格；計數列顯示「n / total」；清除鈕還原。只過濾顯示，不影響選取與資料。
 
 ### 7.9 下載
 
@@ -224,7 +250,7 @@ rare-glyph/
 - **操作目標固定**：`svgs/` 目錄與 `glyphs.js`，不接受任意外部路徑。
 - **檔名消毒**：trim、非空、`basename===原值`、非 `.`/`..`、不含 `/ \ \0`、**且擋 `" ' < > &` 與控制字元**（檔名會被前端塞進屬性，防屬性逸出 / DOM 注入；全形描述字元 ＊／（）＠ 不受影響）、副檔名須 `.svg`。
 - **落點檢查**：`abs === SVGS_DIR || abs.startsWith(SVGS_DIR + sep)`。
-- **registry 驗證**：每筆需 `file` 或 `code` 其一；file 唯一、code-only 的 code 唯一；ids/cbeta/code/uni/pinyin/zhuyin 擋 `\0`/控制字元；timestamp 須 `^\d{0,14}$`；以 `JSON.stringify` 重寫（字串自帶安全跳脫）。
+- **registry 驗證**：每筆需 `file` 或 `code` 其一；file 唯一、code-only 的 code 唯一；ids/cbeta/code/uni/pinyin/zhuyin 擋 `\0`/控制字元；`note` 只擋控制字元**但放行 `\n`／`\t`**（多行欄位，CRLF 正規化成 LF）；timestamp 須 `^\d{0,14}$`；以 `JSON.stringify` 重寫（字串自帶安全跳脫）。
 - **寫前備份**：覆寫 / 刪除前 `.bak/<name>-yyyyMMddHHmmss.bak`（`.bak/` 已 gitignore）。
 - **前端輸出**：控制器 `escHtml` 跳脫 `& < > " '`（含屬性情境）；lib `escAttr` 同。
 - **上傳上限**：`.array('myFiles', 20)`、`fileSize 5MB`；`express.json({ limit:'5mb' })`。
@@ -273,6 +299,9 @@ CSS 變數 light/dark 預設 dark + 防閃爍、`.side-tools` flex 工具列（�
 - **無字形登錄輸出**：提供「帶 code 註記 span」+「純對應字」兩種（使用者可二擇）。
 - **移除 `new` 側鍵**：與三條編輯入口重複且具破壞性，收斂移除。
 - **find 為純前端過濾**：跨欄位子字串、即時、不影響資料；故不需後端搜尋 API。
+- **備註不進 span**（2026-09-19）：其他欄位描述的是**那個字**，備註描述的是**這份策劃工作**；
+  塞進 `data-note` 等於把內部筆記散布到每一份貼出去的文件。同家族 `meta_i18n` 的 `fd_note`——權威在登錄處、不隨產物走。
+- **注音鍵盤做成「插入」不是「複製」**（2026-09-19）：使用者要的是把符號打進那一欄；複製會洗掉剪貼簿、還多一步貼上。
 - **讀音分兩欄不合成一欄**（2026-09-19）：拼音與注音是**兩套記音系統**，一欄存不下
   ——合成一欄之後「這串是哪一種」只能靠猜字元集，而多音字（`luò / lào`）會讓那個猜法更不可靠。
   兩欄各自可空也才表達得出「拼音查得到、注音查不到」這種真實狀態。

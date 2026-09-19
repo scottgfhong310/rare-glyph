@@ -22,7 +22,7 @@ I18n.register('ja', {
   'files.loading': '読み込み中…',
   'files.count': '{n} 件',
   'files.matchCount': '{n} / {total} 件一致',
-  'files.findPh': 'コード / 対応字 / 読み / IDS / CBETA / ファイル名で検索…',
+  'files.findPh': 'コード / 対応字 / 読み / 備考 / IDS / CBETA / ファイル名で検索…',
   'review.label': 'レビュー',
   'review.dirty': '未保存',
   'review.nocode': 'コード無し',
@@ -70,6 +70,17 @@ I18n.register('ja', {
   'pinyin.placeholder': '例：luò（複数は / 区切り）',
   'zhuyin.label': '注音符号',
   'zhuyin.placeholder': '例：ㄌㄨㄛˋ（複数は / 区切り）',
+  'zhuyin.pad': '注音キーパッド（クリックで上の欄に挿入）',
+  'zhuyin.padHint': '第一声は記号なし（教育部の慣例）；打ち間違いは delete で',
+  'zhuyin.t2': '第二声',
+  'zhuyin.t3': '第三声',
+  'zhuyin.t4': '第四声',
+  'zhuyin.t5': '軽声',
+
+  /* 備考 */
+  'note.label': '備考',
+  'note.placeholder': '例：出典、どの字と紛らわしいか、まだ調べること…',
+  'note.hint': '登録ファイルに残るだけ——生成される span には入りません',
 
   /* 字形なし登録（.svg なし・既に Unicode にある） */
   'files.addCodeOnly': '字形なし追加',

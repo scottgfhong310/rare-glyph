@@ -24,7 +24,7 @@ I18n.register('zh-Hant', {
   'files.loading': '載入中…',
   'files.count': '{n} 個缺字',
   'files.matchCount': '{n} / {total} 筆符合',
-  'files.findPh': '搜尋 缺字碼 / 對應字 / 讀音 / IDS / CBETA / 檔名…',
+  'files.findPh': '搜尋 缺字碼 / 對應字 / 讀音 / 備註 / IDS / CBETA / 檔名…',
   'review.label': '檢視',
   'review.dirty': '未存檔變更',
   'review.nocode': '缺缺字碼',
@@ -73,6 +73,17 @@ I18n.register('zh-Hant', {
   'pinyin.placeholder': '例：luò（多音以 / 分隔）',
   'zhuyin.label': '國語注音',
   'zhuyin.placeholder': '例：ㄌㄨㄛˋ（多音以 / 分隔）',
+  'zhuyin.pad': '注音鍵盤（點一下插入上面那一欄）',
+  'zhuyin.padHint': '一聲不標（教育部慣例）；打錯用鍵盤的 delete 就好',
+  'zhuyin.t2': '二聲',
+  'zhuyin.t3': '三聲',
+  'zhuyin.t4': '四聲',
+  'zhuyin.t5': '輕聲',
+
+  /* 備註 */
+  'note.label': '備註',
+  'note.placeholder': '例：出處、與哪個字混用、還要再查什麼…',
+  'note.hint': '只留在登錄檔裡，不會進到產生的 span',
 
   /* 無字形登錄（無 .svg、已有對應 Unicode 字） */
   'files.addCodeOnly': '新增無字形',

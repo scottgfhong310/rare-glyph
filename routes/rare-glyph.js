@@ -11,7 +11,7 @@
  *   GET  /api/rare-glyph/list      → { ok, files:[{ file, code, size, mtime, ids }] }   列 svgs/ 下 .svg + 併 IDS
  *   POST /api/rare-glyph/upload    → 上傳 .svg 到 svgs/（multipart，欄位 myFiles，最多 20，同名覆寫）
  *   POST /api/rare-glyph/delete    → 刪除 svgs/<file>（刪前 .bak 備份）          body { file }
- *   POST /api/rare-glyph/registry  → 寫回 glyphs.js（覆寫前 .bak）               body { entries:[{file, ids, …, pinyin, zhuyin}] }
+ *   POST /api/rare-glyph/registry  → 寫回 glyphs.js（覆寫前 .bak）               body { entries:[{file, ids, …, pinyin, zhuyin, note}] }
  *
  * 安全限制（canon §8）：
  *   - 操作目標固定（svgs/ 目錄 / glyphs.js），不接受任意外部路徑
@@ -80,7 +80,7 @@ async function backup(absFile) {
   await fsp.copyFile(absFile, path.join(bakDir, path.basename(absFile) + '-' + stamp() + '.bak'));
 }
 
-// 讀現有 glyphs.js → { byFile: { file: {ids,cbeta,code,uni,pinyin,zhuyin} }, codeOnly: [ 同上 ] }
+// 讀現有 glyphs.js → { byFile: { file: {ids,cbeta,code,uni,pinyin,zhuyin,note} }, codeOnly: [ 同上 ] }
 //   有 file → 字形登錄（併入檔案系統 svg 清單）；無 file → 無字形登錄（以 code 為鍵）
 async function readRegistry() {
   const byFile = {};
@@ -100,6 +100,7 @@ async function readRegistry() {
             uni: String(e.uni || ''),
             pinyin: String(e.pinyin || ''),        // 漢語拼音（查得到才填）
             zhuyin: String(e.zhuyin || ''),        // 國語注音符號（查得到才填）
+            note: String(e.note || ''),            // 備註（策劃者的工作註記，可多行）
             timestamp: String(e.timestamp || '')   // 加入時間 yyyyMMddHHmmss
           };
           if (e.file) byFile[String(e.file)] = meta;
@@ -142,7 +143,8 @@ router.get('/list', async (req, res) => {
         code: meta.code || '',                         // 大正藏/CBETA 缺字碼
         uni: meta.uni || '',                           // 對應 Unicode 字
         pinyin: meta.pinyin || '',                     // 漢語拼音
-        zhuyin: meta.zhuyin || ''                      // 國語注音符號
+        zhuyin: meta.zhuyin || '',                     // 國語注音符號
+        note: meta.note || ''                          // 備註
       });
     }
     // 無字形登錄（無 .svg、以 code 為鍵）併入清單
@@ -160,7 +162,8 @@ router.get('/list', async (req, res) => {
         code: meta.code || '',
         uni: meta.uni || '',
         pinyin: meta.pinyin || '',
-        zhuyin: meta.zhuyin || ''
+        zhuyin: meta.zhuyin || '',
+        note: meta.note || ''
       });
     }
     // 統一依「加入時間 timestamp」降冪（最近加入排最前）；空 timestamp 沉底，再以 file/code 為穩定次序
@@ -217,7 +220,7 @@ router.post('/delete', async (req, res) => {
   }
 });
 
-// POST /registry — 寫回 glyphs.js（覆寫前 .bak）  body { entries:[{file, ids, cbeta, code, uni, pinyin, zhuyin, timestamp}] }
+// POST /registry — 寫回 glyphs.js（覆寫前 .bak）  body { entries:[{file, ids, cbeta, code, uni, pinyin, zhuyin, note, timestamp}] }
 router.post('/registry', async (req, res) => {
   try {
     const entries = req.body && req.body.entries;
@@ -235,6 +238,8 @@ router.post('/registry', async (req, res) => {
       const uni = String(e.uni == null ? '' : e.uni).trim();
       const pinyin = String(e.pinyin == null ? '' : e.pinyin).trim();
       const zhuyin = String(e.zhuyin == null ? '' : e.zhuyin).trim();
+      // 備註是唯一允許換行的欄位（CRLF 一律正規化成 LF，免得同一段文字存兩次得到兩種位元組）
+      const note = String(e.note == null ? '' : e.note).replace(/\r\n?/g, '\n').trim();
       const timestamp = String(e.timestamp == null ? '' : e.timestamp).trim();
       // 每筆需有 file（字形登錄）或 code（無字形登錄）其一
       if (!file && !code) return res.status(400).json({ ok: false, error: '每筆登錄需有 file 或 code' });
@@ -255,7 +260,9 @@ router.post('/registry', async (req, res) => {
       // 讀音兩欄為自由文字（多音字可寫成「luò / lào」），只擋控制字元；輸出端一律跳脫
       if (/[\0\x01-\x1f]/.test(pinyin)) return res.status(400).json({ ok: false, error: 'pinyin 含非法字元' });
       if (/[\0\x01-\x1f]/.test(zhuyin)) return res.status(400).json({ ok: false, error: 'zhuyin 含非法字元' });
-      clean.push({ file, ids, cbeta, code, uni, pinyin, zhuyin, timestamp: timestamp || stamp() });   // 缺 timestamp → 視為此刻加入
+      // ⚠️ note 的守衛與其他欄位不同：\n 與 \t 要放行（它是多行的），其餘控制字元照擋
+      if (/[\0\x01-\x08\x0b\x0c\x0e-\x1f]/.test(note)) return res.status(400).json({ ok: false, error: 'note 含非法字元' });
+      clean.push({ file, ids, cbeta, code, uni, pinyin, zhuyin, note, timestamp: timestamp || stamp() });   // 缺 timestamp → 視為此刻加入
     }
     // 字形登錄（有 file）在前依檔名、無字形登錄（無 file）在後依 code
     clean.sort((a, b) =>
@@ -273,6 +280,7 @@ router.post('/registry', async (req, res) => {
       ' *   uni  ：該缺字對應的既有 Unicode 字（如 𢤱），可空\n' +
       ' *   pinyin：該字查得到的漢語拼音（如 luò；多音以 / 分隔），可空\n' +
       ' *   zhuyin：該字查得到的國語注音符號（如 ㄌㄨㄛˋ），可空\n' +
+      ' *   note  ：備註（策劃者的工作註記，可多行；**刻意不輸出到 span**），可空\n' +
       ' *   timestamp：加入時間 yyyyMMddHHmmss（清單依此降冪排序；無字形登錄亦可排序）\n' +
       ' */\n';
     const body = 'window.RG_GLYPHS = ' + JSON.stringify(clean, null, 2) + ';\n';
