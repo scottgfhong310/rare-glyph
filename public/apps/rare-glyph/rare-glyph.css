@@ -485,9 +485,11 @@ main { padding: 8px 0 16px; }
 
 /* code 欄的「重產預設碼」icon（input-field 內右側） */
 .code-field { position: relative; }
-.code-field #code-input { padding-right: 30px; }
+.code-field #code-input { padding-right: 30px; box-sizing: border-box; }  /* Materialize 的 input 是 content-box ⇒ 不加這行，padding 會把欄位撐出欄寬 30px */
 .field-icon-btn {
-  position: absolute; right: 0; bottom: 6px;
+  /* 對齊輸入的內容而不是欄底：Materialize input 高 3rem、只有下邊框 1px ⇒
+     內容區中線在欄頂下方 (3rem - 1px) / 2；按鈕再自己往上挪半個身高 */
+  position: absolute; right: 0; top: calc((3rem - 1px) / 2); transform: translateY(-50%);
   display: inline-flex; align-items: center; justify-content: center;
   width: 26px; height: 26px; padding: 0;
   border: 0; border-radius: 6px;
