@@ -137,7 +137,7 @@ I18n.register('ja', {
   'toast.saved': 'IDS 登録 {n} 件を保存 → glyphs.js',
   'toast.saveFail': '保存に失敗：{m}',
   'toast.deleted': '削除しました：{n}',
-  'toast.deleteFail': '削除に失敗：{e}',
+  'toast.deleteFail': '削除に失敗：{m}',
   'toast.pngDownloaded': 'PNG をダウンロードしました：{n}',
   'toast.pngFail': 'PNG の生成に失敗：{e}',
   'toast.idsCopied': 'IDS をコピーしました',

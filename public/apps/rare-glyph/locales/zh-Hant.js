@@ -145,7 +145,7 @@ I18n.register('zh-Hant', {
   'toast.saved': '已存檔 {n} 筆 IDS 登錄 → glyphs.js',
   'toast.saveFail': '存檔失敗：{m}',
   'toast.deleted': '已刪除：{n}',
-  'toast.deleteFail': '刪除失敗：{e}',
+  'toast.deleteFail': '刪除失敗：{m}',
   'toast.pngDownloaded': '已下載 PNG：{n}',
   'toast.pngFail': 'PNG 產生失敗：{e}',
   'toast.idsCopied': '已複製 IDS',

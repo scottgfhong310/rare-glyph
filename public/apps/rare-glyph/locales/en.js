@@ -137,7 +137,7 @@ I18n.register('en', {
   'toast.saved': 'Saved {n} IDS entries → glyphs.js',
   'toast.saveFail': 'Save failed: {m}',
   'toast.deleted': 'Deleted: {n}',
-  'toast.deleteFail': 'Delete failed: {e}',
+  'toast.deleteFail': 'Delete failed: {m}',
   'toast.pngDownloaded': 'PNG downloaded: {n}',
   'toast.pngFail': 'PNG generation failed: {e}',
   'toast.idsCopied': 'IDS copied',

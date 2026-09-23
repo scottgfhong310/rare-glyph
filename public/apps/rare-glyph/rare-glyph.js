@@ -944,7 +944,7 @@
         return loadFiles();
       }).catch(function (err) {
         hideLoading();
-        toast(t('toast.deleteFail', { e: err.message }), 'red');
+        toast(t('toast.deleteFail', { m: err.message }), 'red');
       });
     } else {
       // 無字形登錄：移除登錄
