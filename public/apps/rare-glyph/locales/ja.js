@@ -143,6 +143,6 @@ I18n.register('ja', {
   'toast.idsCopied': 'IDS をコピーしました',
   'toast.cbetaCopied': '組字式をコピーしました',
   'toast.spanCopied': 'span をコピーしました',
-  'toast.copyFail': 'コピーに失敗',
+  'toast.copyFail': 'コピーに失敗しました',
   'confirm.delete': 'SVG「{n}」を削除しますか？\n（先に .bak/ へバックアップ、復元可能）'
 }, '日本語');
